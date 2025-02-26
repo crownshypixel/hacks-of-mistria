@@ -11,7 +11,8 @@ import {
   deleteDirIfExists,
   parseJsonFile,
   unpackSaveToTemp,
-  unpackSavesToTemp
+  unpackSavesToTemp,
+  Pronouns
 } from "./utils"
 
 import { join } from "path"
@@ -36,7 +37,7 @@ export const IPC = {
   SET_REWARD_INVENTORY: "set/reward-inventory",
   SET_BIRTHDAY: "set/birthday",
   SET_INVENTORY: "set/inventory"
-}
+} as const
 
 export const channels = {
   [IPC.MEASURE_UNPACKING]: handleMeasureUnpacking,
@@ -59,7 +60,7 @@ export const channels = {
   [IPC.SET_INVENTORY]: handleSetInventory
 }
 
-async function handleMeasureUnpacking(e, amount) {
+async function handleMeasureUnpacking(e: Electron.IpcMainInvokeEvent, amount: number) {
   if (!isNumber(amount) || amount < 1) {
     console.log(`[handleMeasureUnpacking]: Invalid amount ${amount}`)
     return
@@ -90,7 +91,7 @@ async function handleMeasureUnpacking(e, amount) {
   return measurement
 }
 
-async function handleUpdateSave(e, saveId) {
+async function handleUpdateSave(e: Electron.IpcMainInvokeEvent, saveId) {
   console.log(`[handleUpdateSave:${saveId}]`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
@@ -121,7 +122,7 @@ async function handleUpdateSave(e, saveId) {
   return true
 }
 
-async function handleGetSortedLoadingSaves(e) {
+async function handleGetSortedLoadingSaves(e: Electron.IpcMainInvokeEvent) {
   console.log(`[handleGetSortedLoadingSaves]`)
   const unpackedSavesInfo = Array.from(unpackedSavesPathsCache.values())
 
@@ -143,12 +144,12 @@ async function handleGetSortedLoadingSaves(e) {
   return sortedSavesByLastPlayed
 }
 
-async function handleRefreshSaves(e) {
+async function handleRefreshSaves(e: Electron.IpcMainInvokeEvent) {
   await unpackSavesToTemp()
   return true
 }
 
-async function handleGetSaveData(e, saveId) {
+async function handleGetSaveData(e: Electron.IpcMainInvokeEvent, saveId: string) {
   console.log(`[handleGetSaveData:${saveId}]`)
   const saveInfo = unpackedSavesPathsCache.get(saveId)
   if (!saveInfo) {
@@ -182,7 +183,7 @@ async function handleGetSaveData(e, saveId) {
   }
 }
 
-async function handleSetName(e, saveId, name) {
+async function handleSetName(e: Electron.IpcMainInvokeEvent, saveId: string, name: any) {
   console.log(`[handleSetName:${saveId}]: Updating name to ${name}`)
 
   if (!(typeof name === "string" || name instanceof String)) {
@@ -198,13 +199,13 @@ async function handleSetName(e, saveId, name) {
 
   const { jsonPaths } = saveInfo
 
-  await updateJsonValue(jsonPaths.header, "name", name)
-  await updateJsonValue(jsonPaths.player, "name", name)
+  await updateJsonValue(jsonPaths.header, "name", name as string)
+  await updateJsonValue(jsonPaths.player, "name", name as string)
 
   return true
 }
 
-async function handleSetPronouns(e, saveId, pronouns) {
+async function handleSetPronouns(e: Electron.IpcMainInvokeEvent, saveId: string, pronouns: Pronouns) {
   console.log(`[handleSetPronouns:${saveId}]: Updating pronouns to ${pronouns}`)
 
   if (!(pronouns in PronounsList)) {
@@ -224,13 +225,11 @@ async function handleSetPronouns(e, saveId, pronouns) {
   return true
 }
 
-async function handleSetFarmName(e, saveId, farmName) {
+async function handleSetFarmName(e: Electron.IpcMainInvokeEvent, saveId: string, farmName: any) {
   console.log(`[handleSetFarmName:${saveId}]: Updating farm name to ${farmName}`)
 
   if (!(typeof farmName === "string" || farmName instanceof String)) {
-    console.log(
-      `[handleSetFarmName:${saveId}]: Farm name is not a string ${farmName}, won't update`
-    )
+    console.log(`[handleSetFarmName:${saveId}]: Farm name is not a string ${farmName}, won't update`)
     return false
   }
 
@@ -242,13 +241,13 @@ async function handleSetFarmName(e, saveId, farmName) {
 
   const { jsonPaths } = saveInfo
 
-  await updateJsonValue(jsonPaths.header, "farm_name", farmName)
-  await updateJsonValue(jsonPaths.player, "farm_name", farmName)
+  await updateJsonValue(jsonPaths.header, "farm_name", farmName as string)
+  await updateJsonValue(jsonPaths.player, "farm_name", farmName as string)
 
   return true
 }
 
-async function handleSetGold(e, saveId, gold) {
+async function handleSetGold(e: Electron.IpcMainInvokeEvent, saveId: string, gold: number) {
   console.log(`[handleSetGold:${saveId}]: Updating gold to ${gold}`)
 
   if (!isNumber(gold)) {
@@ -270,7 +269,7 @@ async function handleSetGold(e, saveId, gold) {
   return true
 }
 
-async function handleSetEssence(e, saveId, essence) {
+async function handleSetEssence(e: Electron.IpcMainInvokeEvent, saveId: string, essence: number) {
   console.log(`[handleSetEssence:${saveId}]: Updating essence to ${essence}`)
 
   if (!isNumber(essence)) {
@@ -292,7 +291,7 @@ async function handleSetEssence(e, saveId, essence) {
   return true
 }
 
-async function handleSetRenown(e, saveId, renown) {
+async function handleSetRenown(e: Electron.IpcMainInvokeEvent, saveId: string, renown: number) {
   console.log(`[handleSetRenown:${saveId}]: Updating renown to ${renown}`)
 
   if (!isNumber(renown)) {
@@ -314,20 +313,16 @@ async function handleSetRenown(e, saveId, renown) {
   return true
 }
 
-async function handleSetCalendarTime(e, saveId, calendarTime) {
+async function handleSetCalendarTime(e: Electron.IpcMainInvokeEvent, saveId: string, calendarTime: number) {
   console.log(`[handleSetCalendarTime:${saveId}]: Updating calendar time to ${calendarTime}`)
 
   if (!isNumber(calendarTime)) {
-    console.log(
-      `[handleSetCalendarTime:${saveId}]: Calendar time is not a number ${calendarTime}, won't update`
-    )
+    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time is not a number ${calendarTime}, won't update`)
     return false
   }
 
   if (calendarTime % 86400 != 0) {
-    console.log(
-      `[handleSetCalendarTime:${saveId}]: Calendar time ${calendarTime} is not a multiple of 86400, won't update`
-    )
+    console.log(`[handleSetCalendarTime:${saveId}]: Calendar time ${calendarTime} is not a multiple of 86400, won't update`)
     return false
   }
 
@@ -346,7 +341,7 @@ async function handleSetCalendarTime(e, saveId, calendarTime) {
   return true
 }
 
-async function handleSetHealth(e, saveId, health) {
+async function handleSetHealth(e: Electron.IpcMainInvokeEvent, saveId: string, health: number) {
   console.log(`[handleSetHealth:${saveId}]: Updating health to ${health}`)
 
   if (!isNumber(health)) {
@@ -370,7 +365,7 @@ async function handleSetHealth(e, saveId, health) {
   return true
 }
 
-async function handleSetStamina(e, saveId, stamina) {
+async function handleSetStamina(e: Electron.IpcMainInvokeEvent, saveId: string, stamina: number) {
   console.log(`[handleSetStamina:${saveId}]: Updating stamina to ${stamina}`)
 
   if (!isNumber(stamina)) {
@@ -394,7 +389,7 @@ async function handleSetStamina(e, saveId, stamina) {
   return true
 }
 
-async function handleSetMana(e, saveId, mana) {
+async function handleSetMana(e: Electron.IpcMainInvokeEvent, saveId: number, mana: string) {
   console.log(`[handleSetMana:${saveId}]: Updating mana to ${mana}`)
 
   if (!isNumber(mana)) {
@@ -418,7 +413,7 @@ async function handleSetMana(e, saveId, mana) {
   return true
 }
 
-function handleSetRewardInventory(e, saveId, inventory) {
+function handleSetRewardInventory(e: Electron.IpcMainInvokeEvent, saveId: string, inventory: unknown) {
   console.log(`[handleSetRewardInventory:${saveId}]: Updating reward inventory`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)
@@ -431,7 +426,7 @@ function handleSetRewardInventory(e, saveId, inventory) {
   return updateJsonValue(jsonPaths.player, "renown_reward_inventory", inventory)
 }
 
-async function handleSetBirthday(e, saveId, birthday) {
+async function handleSetBirthday(e: Electron.IpcMainInvokeEvent, saveId: string, birthday: number) {
   console.log(`[handleSetBirthday:${saveId}]: Updating birthday to ${birthday}`)
 
   if (!isNumber(birthday)) {
@@ -440,9 +435,7 @@ async function handleSetBirthday(e, saveId, birthday) {
   }
 
   if (birthday % 86400 != 0) {
-    console.log(
-      `[handleSetBirthday:${saveId}]: Birthday ${birthday} is not a multiple of 86400, won't update`
-    )
+    console.log(`[handleSetBirthday:${saveId}]: Birthday ${birthday} is not a multiple of 86400, won't update`)
     return false
   }
 
@@ -459,7 +452,7 @@ async function handleSetBirthday(e, saveId, birthday) {
   return true
 }
 
-async function handleSetInventory(e, saveId, inventory) {
+async function handleSetInventory(e: Electron.IpcMainInvokeEvent, saveId: string, inventory: unknown) {
   console.log(`[handleSetInventory:${saveId}]: Updating player's inventory`)
 
   const saveInfo = unpackedSavesPathsCache.get(saveId)

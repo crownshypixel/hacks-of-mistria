@@ -59,9 +59,11 @@ export const PronounsList = {
   it_its: "it_its",
   all: "all",
   none: "none"
-}
+} as const
 
-export function isNumber(value) {
+export type Pronouns = keyof typeof PronounsList
+
+export function isNumber(value: unknown) {
   return typeof value === "number" && !Number.isNaN(value)
 }
 
@@ -73,7 +75,7 @@ export function isNumber(value) {
  * - calendarTime[1] = season
  * - calendarTime[2] = day
  */
-export function translateCalendarTime(time) {
+export function translateCalendarTime(time: number) {
   // Spring = 0, Summer = 1, Fall = 2, Winter = 3
   // 86400 * 28 = 2419200 seconds = 1 month because 28 days per month
   // 2419200 * 4 = 9676800 seconds = 1 year
@@ -88,7 +90,7 @@ export function translateCalendarTime(time) {
  * @param filePath The path to the JSON file
  * @returns The parsed JSON object
  */
-export async function parseJsonFile(filePath) {
+export async function parseJsonFile(filePath: string) {
   return JSON.parse(await readFile(filePath, "utf-8"))
 }
 
@@ -97,7 +99,7 @@ export async function parseJsonFile(filePath) {
  * @param filePath The path to the file
  * @param data The data to be written to the file
  */
-export async function writeJsonFile(filePath, data) {
+export async function writeJsonFile(filePath: string, data: unknown) {
   await writeFile(filePath, JSON.stringify(data, null, 2), "utf-8")
 }
 
@@ -105,12 +107,12 @@ export async function writeJsonFile(filePath, data) {
  * @desc Deletes a directory if exists
  * @param dirPath The path to the directory to be deleted
  */
-export async function deleteDirIfExists(dirPath) {
+export async function deleteDirIfExists(dirPath: string) {
   try {
     await access(dirPath)
     await rm(dirPath, { recursive: true })
   } catch (error) {
-    if (error.code !== "ENOENT") {
+    if (error instanceof Error && "code" in error && error.code !== "ENOENT") {
       throw error
     }
   }
@@ -135,7 +137,7 @@ export const vaultc = {
    * @param savefilePath The path to the `.sav` file to be created
    * @param unpackDirPath The path to the directory containing the unpacked json files
    */
-  packSave: async (savefilePath, unpackDirPath) => {
+  packSave: async (savefilePath: string, unpackDirPath: string) => {
     await execFileAsync(vaultcPath, ["pack", savefilePath, unpackDirPath])
   },
   /**
@@ -143,7 +145,7 @@ export const vaultc = {
    * @param savefilePath The path to the `.sav` file to be unpacked
    * @param unpackDirPath The path to the directory where the unpacked json files will be saved
    */
-  unpackSave: async (savefilePath, unpackDirPath) => {
+  unpackSave: async (savefilePath: string, unpackDirPath: string) => {
     await execFileAsync(vaultcPath, ["unpack", savefilePath, unpackDirPath])
   }
 }
@@ -155,7 +157,7 @@ export const vaultc = {
  * @example getSaveIdFromPath('C:/Users/username/AppData/Local/FieldsOfMistria/saves/game-1292331906-835634871.sav')
  * // returns 'game-1292331906-835634871'
  */
-export function getSaveIdFromPath(savePath) {
+export function getSaveIdFromPath(savePath: string) {
   return path.basename(savePath).replace(".sav", "")
 }
 
@@ -164,7 +166,7 @@ export function getSaveIdFromPath(savePath) {
  * @param saveId The saveId extracted from the save file path (see the `getSaveIdFromPath` function)
  * @returns The path to the directory where the save file should be unpacked
  */
-export function getUnpackPathFromSaveId(saveId) {
+export function getUnpackPathFromSaveId(saveId: string) {
   return path.join(tempSavesPath, saveId)
 }
 
@@ -202,7 +204,7 @@ export async function unpackSavesToTemp() {
  * @desc Same as `unpackSavesToTemp` but for a single save file
  * @param fomSavePath The path to the FoM save file
  */
-export async function unpackSaveToTemp(fomSavePath) {
+export async function unpackSaveToTemp(fomSavePath: string) {
   const saveId = getSaveIdFromPath(fomSavePath)
   const unpackDirPath = getUnpackPathFromSaveId(saveId)
 
@@ -217,7 +219,7 @@ export async function unpackSaveToTemp(fomSavePath) {
  * @param fomSavePath The path to the FoM save file
  * @returns An object with the info about the unpacked save file
  */
-function createUnpackedSaveCache(fomSavePath) {
+function createUnpackedSaveCache(fomSavePath: string) {
   const saveId = getSaveIdFromPath(fomSavePath)
   const unpackDirPath = getUnpackPathFromSaveId(saveId)
 
@@ -257,7 +259,7 @@ function createUnpackedSaveCache(fomSavePath) {
  * @param key The key to be updated in the JSON file. It can also be a nested key separated by dots (e.g. 't2_world_facts.ari_name')
  * @param value The new value to be set
  */
-export async function updateJsonValue(filePath, key, value) {
+export async function updateJsonValue(filePath: string, key: string, value: any) {
   const file = await parseJsonFile(filePath)
   const keys = key.split(".")
 
