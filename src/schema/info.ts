@@ -1,14 +1,16 @@
 import { z } from "zod"
 
-export const Version = z.object({
+export const VersionSchema = z.object({
   patch: z.number(),
   major: z.number(),
   minor: z.number(),
   pre: z.nullable(z.unknown())
 })
 
-export const Info = z.object({
+export const InfoSchema = z.object({
   last_played: z.number(),
-  version: Version,
-  creation_version: Version
+  version: VersionSchema,
+  creation_version: VersionSchema
 })
+
+export type Info = z.infer<typeof InfoSchema>

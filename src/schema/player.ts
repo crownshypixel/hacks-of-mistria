@@ -1,10 +1,10 @@
 import { z } from "zod"
-import { Preset, Stats } from "./header"
-import { ArmorInventory, PlayerInventory, RenownInventory } from "./inventory"
+import { CalendarTime, PresetSchema, StatsSchema } from "./header"
+import { ArmorInventorySchema, PlayerInventorySchema, RenownInventorySchema } from "./inventory"
 
 const MAX_PRESET_SLOTS = 8
 
-const Pronoun = z.enum([
+export const PronounSchema = z.enum([
   "they_them",
   "she_her",
   "he_him",
@@ -19,23 +19,25 @@ const Pronoun = z.enum([
   "none"
 ])
 
-export const Player = z
+export type Pronoun = z.infer<typeof PronounSchema>
+
+export const PlayerSchema = z
   .object({
     preset_index_selected: z.number(),
-    presets: z.array(Preset).max(MAX_PRESET_SLOTS),
+    presets: z.array(PresetSchema).max(MAX_PRESET_SLOTS),
     recipe_unlocks: z.array(z.string()),
     farm_name: z.string(),
     name: z.string(),
     seen_cosmetics: z.array(z.string()),
     spells_learned: z.array(z.string()),
-    birthday: z.number(),
-    cosmetic_unlocks: z.string(),
-    armor: ArmorInventory,
-    inventory: PlayerInventory,
-    stats: Stats,
-    pinned_spell: z.string(),
-    renown_reward_inventory: RenownInventory,
-    pronoun_choice: Pronoun,
+    birthday: CalendarTime,
+    cosmetic_unlocks: z.array(z.string()),
+    armor: ArmorInventorySchema,
+    inventory: PlayerInventorySchema,
+    stats: StatsSchema,
+    pinned_spell: z.string().nullable(),
+    renown_reward_inventory: RenownInventorySchema,
+    pronoun_choice: PronounSchema,
     skill_xp: z.object({
       archaeology: z.number(),
       farming: z.number(),
@@ -49,3 +51,5 @@ export const Player = z
     })
   })
   .passthrough()
+
+export type Player = z.infer<typeof PlayerSchema>
