@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { CalendarTime, WeatherSchema } from "./header"
+import { CalendarTime, WeatherSchema } from "schema/header"
 
 export const GamedataSchema = z
   .object({

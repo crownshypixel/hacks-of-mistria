@@ -31,6 +31,7 @@ export const StatsSchema = z
     renown: z.number(),
     essence: z.number(),
     mana_current: z.number(),
+    health_current: z.number(),
     status_effects: z
       .object({
         finish: z.number(),
@@ -39,8 +40,7 @@ export const StatsSchema = z
         type: EffectTypeSchema
       })
       .nullable()
-      .array(),
-    health_current: z.number()
+      .array()
   })
   .passthrough()
 

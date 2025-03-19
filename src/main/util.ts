@@ -2,10 +2,6 @@ import { readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 import os from "node:os"
 import { z } from "zod"
-import pino from "pino"
-
-// TODO: Remove this
-process.env.NODE_ENV = "development"
 
 const env = z
   .object({
@@ -17,15 +13,6 @@ export const IS_DEV = env.NODE_ENV === "development"
 export const IS_PROD = env.NODE_ENV === "production"
 export const ROOT_PATH = path.join(__dirname, "..", "..")
 export const APPDATA_PATH = path.join(os.homedir(), "AppData")
-
-export const logger = pino({
-  level: IS_PROD ? "error" : "debug",
-  transport: IS_DEV
-    ? {
-        target: "pino-pretty"
-      }
-    : undefined
-})
 
 export async function readJson<T extends {}>(filePath: string) {
   return JSON.parse(await readFile(filePath, "utf-8")) as T

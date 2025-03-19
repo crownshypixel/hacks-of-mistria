@@ -1,8 +1,8 @@
 import { z } from "zod"
 
-const ARMOR_SLOTS = 5
-const RENOWN_SLOTS = 8
-const INVENTORY_SLOTS = [10, 20, 30]
+export const ARMOR_SLOTS = 5
+export const RENOWN_SLOTS = 8
+export const INVENTORY_SLOTS = [10, 20, 30]
 
 export const InfusionSchema = z.enum([
   "fortified",

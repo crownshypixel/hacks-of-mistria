@@ -2,8 +2,11 @@ import path from "node:path"
 import { promisify } from "node:util"
 import { readdir, rm } from "node:fs/promises"
 import { execFile } from "node:child_process"
-import { InfoSchema } from "../schema"
-import { APPDATA_PATH, readJson, ROOT_PATH, updateObjectValue, writeJson } from "./util"
+import { HeaderSchema } from "schema/header"
+import { PlayerSchema } from "schema/player"
+import { InfoSchema } from "schema/info"
+import { APPDATA_PATH, readJson, ROOT_PATH, updateObjectValue, writeJson } from "main/util"
+import { GamedataSchema } from "schema/gamedata"
 
 const execFileAsync = promisify(execFile)
 
@@ -35,6 +38,13 @@ const JSON_KEYS = [
   "western_ruins"
 ] as const
 
+const JsonParsersMap = {
+  header: HeaderSchema,
+  player: PlayerSchema,
+  info: InfoSchema,
+  gamedata: GamedataSchema
+}
+
 const vaultc = {
   pack: async (unpackPath: string, savePath: string) => await execFileAsync(VAULTC_PATH, ["pack", unpackPath, savePath]),
   unpack: async (savePath: string, unpackPath: string) => await execFileAsync(VAULTC_PATH, ["unpack", savePath, unpackPath])
@@ -50,9 +60,9 @@ type SavesPaths = {
   }
 }
 
-export const savesPaths: SavesPaths = {}
+const savesPaths: SavesPaths = {}
 
-async function getSavesPaths() {
+export async function getSavesPaths() {
   return (await readdir(SAVES_PATH)).filter((file) => file.endsWith(".sav")).map((file) => path.join(SAVES_PATH, file))
 }
 
@@ -62,11 +72,16 @@ export async function unpackSave(savePath: string) {
 
   await vaultc.unpack(savePath, unpackPath)
 
+  // @ts-ignore
+  savesPaths[saveId] = {}
+
   for (const key of JSON_KEYS) {
     savesPaths[saveId].originPath = savePath
     savesPaths[saveId].unpackPath = unpackPath
     savesPaths[saveId][key] = path.join(unpackPath, `${key}.json`)
   }
+
+  return saveId
 }
 
 export async function unpackAllSaves() {
@@ -74,9 +89,13 @@ export async function unpackAllSaves() {
 
   await rm(UNPACKING_DIR_PATH, { recursive: true, force: true })
 
+  let unpackedIds: string[] = []
+
   for (const path of paths) {
-    unpackSave(path)
+    unpackedIds.push(await unpackSave(path))
   }
+
+  return unpackedIds
 }
 
 export async function packSave(saveId: string, shouldBringOnTop: boolean) {
@@ -102,4 +121,33 @@ export async function packSave(saveId: string, shouldBringOnTop: boolean) {
   }
 
   await vaultc.pack(savePaths.unpackPath, savePaths.originPath)
+
+  return Date.now()
+}
+
+// TODO: Add better type support for `keyPath`
+type UpdateType = { json: (typeof JSON_KEYS)[number]; keyPath: string; value: any }
+
+async function applyUpdate(saveId: string, update: UpdateType) {
+  const savePaths = savesPaths[saveId]
+
+  const jsonKey = update.json
+  const jsonPath = savePaths.json[jsonKey]
+
+  const schemaParser = JsonParsersMap[jsonKey]
+  const parsedJson = schemaParser.parse(await readJson(jsonPath))
+
+  const updatedObj = updateObjectValue(parsedJson, { keyPath: update.keyPath, value: update.value })
+
+  await writeJson(jsonPath, schemaParser.parse(updatedObj))
+}
+
+export function update(saveId: string, updates: UpdateType[] | UpdateType) {
+  if (Array.isArray(updates)) {
+    for (const update of updates) {
+      return applyUpdate(saveId, update)
+    }
+  } else {
+    return applyUpdate(saveId, updates)
+  }
 }

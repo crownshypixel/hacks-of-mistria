@@ -4,7 +4,15 @@
   "compilerOptions": {
     "composite": true,
     "types": ["electron-vite/node"],
+    "baseUrl": ".",
+    "paths": {
+      "main/*": ["src/main/*"],
+      "schema/*": ["src/schema/*"],
+      "shared/*": ["src/shared/*"],
+      "root/*": ["./*"]
+    },
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "noImplicitReturns": false
   }
 }

@@ -1,8 +1,8 @@
 import { z } from "zod"
-import { CalendarTime, PresetSchema, StatsSchema } from "./header"
-import { ArmorInventorySchema, PlayerInventorySchema, RenownInventorySchema } from "./inventory"
+import { CalendarTime, PresetSchema, StatsSchema } from "schema/header"
+import { ArmorInventorySchema, PlayerInventorySchema, RenownInventorySchema } from "schema/inventory"
 
-const MAX_PRESET_SLOTS = 8
+export const MAX_PRESET_SLOTS = 8
 
 export const PronounSchema = z.enum([
   "they_them",

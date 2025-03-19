@@ -1,9 +1,9 @@
 import { app, shell, BrowserWindow } from "electron"
 import { join } from "path"
 import { electronApp } from "@electron-toolkit/utils"
-import icon from "../../resources/icon.png?asset"
-import { IS_DEV } from "./util"
-import { ipcMain } from "../shared/ipc"
+import icon from "root/resources/icon.png?asset"
+import { IS_DEV } from "main/util"
+import { ipcMain } from "shared/ipc"
 
 const { handle } = ipcMain
 
@@ -31,6 +31,7 @@ app.whenReady().then(async () => {
     mainWindow.show()
   })
 
+  // ipc handlers
   Object.keys(handle).map((key) => {
     handle[key]()
   })
