@@ -19,7 +19,7 @@ const vaultSlice = createIpcSlice({
     async unpack(_, { saveId }: BaseActionData) {
       return unpackSave(saveId)
     },
-    async unpackAll() {
+    unpackAll() {
       return unpackAllSaves()
     }
   }

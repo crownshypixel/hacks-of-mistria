@@ -1,6 +1,6 @@
 import { defineConfig, externalizeDepsPlugin } from "electron-vite"
 import react from "@vitejs/plugin-react"
-import path from "path"
+import path from "node:path"
 
 export default defineConfig({
   main: {
@@ -17,7 +17,9 @@ export default defineConfig({
   preload: {
     resolve: {
       alias: {
-        shared: path.resolve("src/shared")
+        main: path.resolve("src/main"),
+        shared: path.resolve("src/shared"),
+        schema: path.resolve("src/schema")
       }
     },
     plugins: [externalizeDepsPlugin()]

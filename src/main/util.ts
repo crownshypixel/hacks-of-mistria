@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 import os from "node:os"
 import { z } from "zod"
+import { execFile } from "node:child_process"
 
 const env = z
   .object({
@@ -33,6 +34,24 @@ export function isJsonSerializable(data: unknown) {
   } catch {
     return false
   }
+}
+
+export async function safeExecFile(file: string, args: string[], options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = execFile(file, args, options, (error, stdout, stderr) => {
+      if (error) return reject(error)
+      if (stderr) console.error(`execFile error: ${stderr}`)
+      resolve(stdout)
+    })
+
+    const timeout = setTimeout(() => {
+      console.error(`Timeout on execFile for args: ${args.join(" ")}`)
+      child.kill()
+      reject(new Error("Process timeout"))
+    }, 3000)
+
+    child.on("close", () => clearTimeout(timeout))
+  })
 }
 
 type ObjectUpdate = {

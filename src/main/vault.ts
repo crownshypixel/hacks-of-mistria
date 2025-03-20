@@ -1,14 +1,10 @@
 import path from "node:path"
-import { promisify } from "node:util"
 import { readdir, rm } from "node:fs/promises"
-import { execFile } from "node:child_process"
 import { HeaderSchema } from "schema/header"
 import { PlayerSchema } from "schema/player"
 import { InfoSchema } from "schema/info"
-import { APPDATA_PATH, readJson, ROOT_PATH, updateObjectValue, writeJson } from "main/util"
+import { APPDATA_PATH, readJson, ROOT_PATH, safeExecFile, updateObjectValue, writeJson } from "main/util"
 import { GamedataSchema } from "schema/gamedata"
-
-const execFileAsync = promisify(execFile)
 
 const LOCAL_GAMEDATA_PATH = path.join(APPDATA_PATH, "Local", "FieldsOfMistria")
 const SAVES_PATH = path.join(LOCAL_GAMEDATA_PATH, "saves")
@@ -46,8 +42,8 @@ const JsonParsersMap = {
 }
 
 const vaultc = {
-  pack: async (unpackPath: string, savePath: string) => await execFileAsync(VAULTC_PATH, ["pack", unpackPath, savePath]),
-  unpack: async (savePath: string, unpackPath: string) => await execFileAsync(VAULTC_PATH, ["unpack", savePath, unpackPath])
+  pack: async (unpackPath: string, savePath: string) => safeExecFile(VAULTC_PATH, ["pack", unpackPath, savePath]),
+  unpack: async (savePath: string, unpackPath: string) => safeExecFile(VAULTC_PATH, ["unpack", savePath, unpackPath])
 }
 
 type SavesPaths = {
@@ -70,7 +66,9 @@ export async function unpackSave(savePath: string) {
   const saveId = path.basename(savePath).replace(".sav", "")
   const unpackPath = path.join(UNPACKING_DIR_PATH, saveId)
 
+  // console.time(`vaultc ${saveId}`)
   await vaultc.unpack(savePath, unpackPath)
+  // console.timeEnd(`vaultc ${saveId}`)
 
   // @ts-ignore
   savesPaths[saveId] = {}
@@ -89,13 +87,7 @@ export async function unpackAllSaves() {
 
   await rm(UNPACKING_DIR_PATH, { recursive: true, force: true })
 
-  let unpackedIds: string[] = []
-
-  for (const path of paths) {
-    unpackedIds.push(await unpackSave(path))
-  }
-
-  return unpackedIds
+  return await Promise.all(paths.map((path) => unpackSave(path)))
 }
 
 export async function packSave(saveId: string, shouldBringOnTop: boolean) {
