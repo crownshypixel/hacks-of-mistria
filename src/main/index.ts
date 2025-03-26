@@ -3,7 +3,7 @@ import { join } from "path"
 import { electronApp } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
 import { IS_DEV } from "main/util"
-import { ipcMain } from "shared/ipc"
+import { ipcMain } from "main/ipc"
 
 const { handle } = ipcMain
 
@@ -46,6 +46,16 @@ app.whenReady().then(async () => {
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
   }
+
+  const { default: contextMenu } = await import("electron-context-menu")
+
+  contextMenu({
+    window: mainWindow,
+    menu: (actions, params) => [
+      ...(params.selectionText ? [actions.copy({})] : []), // Show "Copy" if text is selected
+      ...(params.isEditable ? [actions.paste({})] : []) // Show "Paste" if editable field
+    ]
+  })
 
   if (IS_DEV) {
     mainWindow.webContents.on("before-input-event", (_, input) => {
