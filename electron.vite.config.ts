@@ -28,7 +28,8 @@ export default defineConfig({
     resolve: {
       alias: {
         src: path.resolve("src/renderer/src"),
-        shared: path.resolve("src/shared")
+        shared: path.resolve("src/shared"),
+        schema: path.resolve("src/schema")
       }
     },
     plugins: [react()]
