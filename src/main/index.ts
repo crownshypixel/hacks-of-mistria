@@ -4,6 +4,7 @@ import { electronApp } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
 import { IS_DEV } from "main/util"
 import { ipcMain } from "main/ipc"
+import { initOfflineGamedata } from "main/vault"
 
 const { handle } = ipcMain
 
@@ -57,6 +58,8 @@ app.whenReady().then(async () => {
     ]
   })
 
+  initOfflineGamedata()
+
   if (IS_DEV) {
     mainWindow.webContents.on("before-input-event", (_, input) => {
       if (input.type === "keyDown" && input.key === "F12") {
@@ -66,4 +69,6 @@ app.whenReady().then(async () => {
       }
     })
   }
+
+  // initOfflineGamedata()
 })

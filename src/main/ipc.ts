@@ -1,5 +1,13 @@
 import { createInterprocess } from "interprocess"
-import { backupSaves, getAllSavesInfo, getSingleSaveInfo, packSave, unpackAllSaves, unpackSave } from "main/vault"
+import {
+  backupSaves,
+  fetchVersionIds,
+  getAllSavesInfo,
+  getSingleSaveInfo,
+  packSave,
+  unpackAllSaves,
+  unpackSave
+} from "main/vault"
 import { Updater, type UpdateType } from "main/updates"
 import { dialog } from "electron/main"
 
@@ -48,6 +56,9 @@ export const { exposeApiToGlobalWindow, ipcMain, ipcRenderer } = createInterproc
     },
     async getSaveInfo(_, saveId: string) {
       return getSingleSaveInfo(saveId)
+    },
+    async getVersionIds(_, version: `v${number}.${number}`) {
+      return fetchVersionIds(version)
     }
   }
 })
