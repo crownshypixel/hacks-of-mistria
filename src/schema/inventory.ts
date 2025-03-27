@@ -66,7 +66,7 @@ export const CosmeticMemberSchema = z.object({
   cosmetic: z.string(),
   animal_cosmetic: z.null(),
   gold_to_gain: z.null(),
-  item_id: z.string(),
+  item_id: z.literal("cosmetic"),
   inner_item: z.null(),
   infusion: z.null()
 })
@@ -76,7 +76,7 @@ export const AnimalCosmeticMemberSchema = z.object({
   cosmetic: z.null(),
   animal_cosmetic: z.object({ cosmetic: z.string(), animal: z.string() }),
   gold_to_gain: z.null(),
-  item_id: z.string(),
+  item_id: z.literal("animal_cosmetic"),
   inner_item: z.null(),
   infusion: z.null()
 })

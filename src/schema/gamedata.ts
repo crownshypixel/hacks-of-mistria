@@ -1,9 +1,9 @@
 import { z } from "zod"
-import { CalendarTime, WeatherSchema } from "schema/header"
+import { WeatherSchema } from "schema/header"
 
 export const GamedataSchema = z
   .object({
-    date: CalendarTime,
+    date: z.number(),
     maximum_mines_level: z.number(), // TODO: add max
     clock: z.number(),
     weather: WeatherSchema,

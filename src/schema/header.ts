@@ -48,9 +48,9 @@ export const WeatherSchema = z.object({
   forecast: z.array(z.string())
 })
 
-export const CalendarTime = z.number().refine((time) => time % 86400 === 0, {
-  message: "Calendar time must be multiple of 86400"
-})
+// export const CalendarTime = z.number().refine((time) => time % 86400 === 0, {
+//   message: "Calendar time must be multiple of 86400"
+// })
 
 export const HeaderSchema = z
   .object({
@@ -58,7 +58,7 @@ export const HeaderSchema = z
     preset: PresetSchema,
     name: z.string(),
     farm_name: z.string(),
-    calendar_time: CalendarTime,
+    calendar_time: z.number(),
     clock_time: z.number(),
     weather: WeatherSchema,
     stats: StatsSchema

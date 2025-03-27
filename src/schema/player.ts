@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { CalendarTime, PresetSchema, StatsSchema } from "schema/header"
+import { PresetSchema, StatsSchema } from "schema/header"
 import { ArmorInventorySchema, PlayerInventorySchema, RenownInventorySchema } from "schema/inventory"
 
 export const MAX_PRESET_SLOTS = 8
@@ -30,7 +30,7 @@ export const PlayerSchema = z
     name: z.string(),
     seen_cosmetics: z.array(z.string()),
     spells_learned: z.array(z.string()),
-    birthday: CalendarTime,
+    birthday: z.number(),
     cosmetic_unlocks: z.array(z.string()),
     armor: ArmorInventorySchema,
     inventory: PlayerInventorySchema,

@@ -6,7 +6,8 @@
   "author": "crownshypixel",
   "scripts": {
     "prepare": "husky || true",
-    "dev": "set NODE_ENV=development && electron-vite dev -w",
+    "dev": "set NODE_ENV=development && electron-vite dev",
+    "dev:watch": "set NODE_ENV=development && electron-vite dev -w",
     "measure-unpacking": "node ./scripts/measure-unpacking.js",
     "update-ids": "node ./scripts/update-ids.js",
     "postinstall": "electron-builder install-app-deps",

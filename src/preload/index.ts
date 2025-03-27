@@ -1,4 +1,4 @@
-import { exposeApiToGlobalWindow } from "shared/ipc"
+import { exposeApiToGlobalWindow } from "main/ipc"
 
 const { key, api } = exposeApiToGlobalWindow()
 
