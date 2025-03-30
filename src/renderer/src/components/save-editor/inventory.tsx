@@ -22,7 +22,7 @@ import editIcon from "src/assets/edit.png"
 import { useEditorStore } from "src/components/save-editor/context"
 import { EditorData } from "src/store"
 import { Tooltip } from "src/components/primitives/tooltip"
-import { useGamedataInfo } from "src/queries"
+import { useGamedata } from "src/queries"
 import { LoadingMessage } from "src/components/custom/loading"
 import { RadioCardItem, RadioCardRoot } from "src/components/primitives/radio-card"
 import {
@@ -75,7 +75,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 // Entry
 export function InventoryEditing() {
-  const { data, isPending, isError, error } = useGamedataInfo()
+  const { data, isPending, isError, error } = useGamedata()
 
   if (isPending) {
     return (
@@ -109,7 +109,9 @@ function PlayerInventory({ versionedGamedata }: { versionedGamedata: VersionedGa
 
   const alertNotes = [
     "You can add any item except animal cosmetics.",
-    "Depending on the item id you choose, more options will open for you to fill"
+    "Depending on the item id you choose, more options will open for you to fill.",
+    "Some items might show the quantity option even if they don't (or shouldn't) stack, like equipment items. Be mindful where you add quantity.",
+    "Generally you can put any infusion on any item. It doesn't seem to cause any issues but you never know. If you are not sure, the wiki might help: https://fieldsofmistria.wiki.gg/wiki/Infusion"
   ]
 
   return (
@@ -169,44 +171,44 @@ function Slot({ slotId, gamedata }: { slotId: number; gamedata: Gamedata }) {
         {slotType === SlotType.Cooking ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
             <Text>Recipe</Text>
             <CookingInnerItemPicker slotId={slotId} innerItemIds={cookingIds} />
           </Stack>
         ) : slotType === SlotType.Furniture ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
             <Text>Furniture</Text>
             <FurnitureInnerItemPicker slotId={slotId} innerItemIds={furnitureIds} />
           </Stack>
         ) : slotType === SlotType.Item ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
             <QuantityItemPicker slotId={slotId} />
             <InfusionPicker slotId={slotId} />
           </Stack>
         ) : slotType === SlotType.AnimalCosmetic ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
           </Stack>
         ) : slotType === SlotType.Empty ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
           </Stack>
         ) : slotType === SlotType.Purse ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
             <GoldPicker slotId={slotId} />
           </Stack>
         ) : slotType === SlotType.Cosmetic ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker slotId={slotId} ids={ids} />
+            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
             <Text>Cosmetic</Text>
             <CosmeticIdPicker slotId={slotId} cosmeticIds={cosmeticIds} />
           </Stack>
@@ -441,7 +443,7 @@ function QuantityItemPicker({ slotId }: { slotId: number }) {
   }
 
   return (
-    <Field label="Quantity" w="fit">
+    <Field label="Quantity" w="full">
       <NumberInput.Root w="full" value={quantity.toString()} onValueChange={handleQuantityChange} min={1} max={999} step={1}>
         <NumberInput.Input />
         <NumberInput.Control>
@@ -807,7 +809,7 @@ function ItemIdPicker({ slotId, ids }: { slotId: number; ids: string[] }) {
                     Selected id: {tempIdSelected ? <Code textStyle="xl">{tempIdSelected}</Code> : "None"}
                   </Text>
                   <Dialog.ActionTrigger asChild>
-                    <Button onClick={handleSave} bg="green.600" _hover={{ opacity: 0.9 }} h="9">
+                    <Button disabled={!tempIdSelected} onClick={handleSave} bg="green.600" _hover={{ opacity: 0.9 }} h="9">
                       Save
                     </Button>
                   </Dialog.ActionTrigger>

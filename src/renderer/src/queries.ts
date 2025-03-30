@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 
 const { invoke } = window.api
 
@@ -10,11 +10,11 @@ const defaultQueryOpts = {
   retry: 2
 } as const
 
-export const useGameSavesInfoKey = ["gamesaves"] as const
-export function useGameSavesInfo() {
+// used for loading all saves, with minimal information like name, pronoun, date, clock etc
+export function useSaves() {
   return useQuery({
     ...defaultQueryOpts,
-    queryKey: useGameSavesInfoKey,
+    queryKey: ["saves"],
     queryFn: async () => {
       await invoke.unpackAll()
       return invoke.getAllSavesInfo()
@@ -22,53 +22,23 @@ export function useGameSavesInfo() {
   })
 }
 
-export function useGameSaveInfo(saveId: string | null) {
+// used in the save-editor to load all the editing data like the player inventory, armor inventory etc
+export function useSave(saveId: string | null) {
   return useQuery({
     ...defaultQueryOpts,
-    queryKey: ["save-info", saveId],
-    queryFn: () => invoke.getSaveInfo(saveId!),
+    queryKey: ["save", saveId],
+    queryFn: async () => {
+      return invoke.getSaveInfo(saveId!)
+    },
     enabled: !!saveId
   })
 }
 
-export function useUnpackAllSaves() {
+// used for loading gamedata ids (furniture, recipes, etc)
+export function useGamedata() {
   return useQuery({
     ...defaultQueryOpts,
-    queryKey: ["save-ids"],
-    queryFn: () => invoke.unpackAll()
-  })
-}
-
-export function useAllSavesInfo() {
-  return useQuery({
-    ...defaultQueryOpts,
-    queryKey: ["saves-info"],
-    queryFn: () => invoke.getAllSavesInfo()
-  })
-}
-
-export function useSaveEditingInfo(saveId: string) {
-  return useQuery({
-    ...defaultQueryOpts,
-    queryKey: ["save-info", saveId],
-    queryFn: () => invoke.getSaveInfo(saveId)
-  })
-}
-
-export async function fetchAllVersionGamedata() {
-  const versions = await invoke.getGamedataVersions()
-  const gamedata = await Promise.all(versions.map((v) => invoke.getVersionGamedata(v)))
-  return gamedata.filter((data) => data !== null)
-}
-
-// TODO: There is a Version z schema on the main/vault. Maybe move some stuff to a shared to the renderer
-export type Version = `v${number}.${number}`
-
-export const useGamedataInfoKey = ["gamedata"]
-export function useGamedataInfo() {
-  return useQuery({
-    ...defaultQueryOpts,
-    queryKey: useGamedataInfoKey,
+    queryKey: ["gamedata"],
     queryFn: async () => {
       const versions = await invoke.getGamedataVersions()
       const gamedata = await Promise.all(versions.map((v) => invoke.getVersionGamedata(v)))

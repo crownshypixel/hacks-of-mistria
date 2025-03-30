@@ -1,6 +1,6 @@
-import { Alert, Box, Button, Center, Code, Flex, HStack, Input, VStack } from "@chakra-ui/react"
-import React, { Fragment, useState } from "react"
-import { useGameSavesInfo, useGameSavesInfoKey } from "src/queries"
+import { Box, Button, Center, Code, Flex, HStack, Input, VStack } from "@chakra-ui/react"
+import { Fragment, useState } from "react"
+import { useSaves } from "src/queries"
 import { LoadingMessage } from "src/components/custom/loading"
 import {
   PaginationItems,
@@ -12,10 +12,10 @@ import { SEASONS, translateCalendar } from "src/time-utils"
 import { SaveCard } from "src/components/save-card"
 import { AppPage, useActiveSaveId, useAppPage } from "src/store"
 import { useQueryClient } from "@tanstack/react-query"
-import { AlertNotes } from "./custom/alert-notes"
+import { AlertNotes } from "src/components/custom/alert-notes"
 
 export function GameSaves() {
-  const { data: saves, isPending, isError, error } = useGameSavesInfo()
+  const { data: saves, isPending, isError, error } = useSaves()
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
   const { setAppPage } = useAppPage()
@@ -55,7 +55,7 @@ export function GameSaves() {
   }
 
   const reloadSavesHandler = async () => {
-    await queryClient.resetQueries({ queryKey: useGameSavesInfoKey, exact: true })
+    await queryClient.resetQueries({ queryKey: ["saves"], exact: true })
   }
 
   const backToMenuHandler = () => {

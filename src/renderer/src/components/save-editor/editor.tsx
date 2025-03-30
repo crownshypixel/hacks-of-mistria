@@ -1,6 +1,6 @@
 import { Button, Center, Stack } from "@chakra-ui/react"
 import { LoadingMessage } from "src/components/custom/loading"
-import { useGameSaveInfo } from "src/queries"
+import { useSave } from "src/queries"
 import { CharacterEditing } from "src/components/save-editor/character"
 import { BirthdayEditing } from "src/components/save-editor/birthday"
 import { CalendarEditing } from "src/components/save-editor/calendar"
@@ -12,7 +12,7 @@ import { EditorStoreProvider } from "src/components/save-editor/context"
 export function SaveEditor() {
   const { setAppPage } = useAppPage()
   const { activeSaveId: saveId, setActiveSaveId } = useActiveSaveId()
-  const { isPending, data } = useGameSaveInfo(saveId)
+  const { isPending, data } = useSave(saveId)
 
   if (!saveId) {
     return <Center py={18}>This should never happen. You entered the save editor page without a save id</Center>
