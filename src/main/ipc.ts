@@ -1,8 +1,9 @@
 import { createInterprocess } from "interprocess"
 import {
   backupSaves,
-  fetchVersionIds,
+  fetchVersionGamedata,
   getAllSavesInfo,
+  getGamedataVersionList,
   getSingleSaveInfo,
   packSave,
   unpackAllSaves,
@@ -57,8 +58,11 @@ export const { exposeApiToGlobalWindow, ipcMain, ipcRenderer } = createInterproc
     async getSaveInfo(_, saveId: string) {
       return getSingleSaveInfo(saveId)
     },
-    async getVersionIds(_, version: `v${number}.${number}`) {
-      return fetchVersionIds(version)
+    async getVersionGamedata(_, version: `v${number}.${number}`) {
+      return fetchVersionGamedata(version)
+    },
+    async getGamedataVersions(_) {
+      return getGamedataVersionList()
     }
   }
 })

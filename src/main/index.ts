@@ -4,7 +4,7 @@ import { electronApp } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
 import { IS_DEV } from "main/util"
 import { ipcMain } from "main/ipc"
-import { initOfflineGamedata } from "main/vault"
+import { initGamedata } from "main/vault"
 
 const { handle } = ipcMain
 
@@ -53,12 +53,12 @@ app.whenReady().then(async () => {
   contextMenu({
     window: mainWindow,
     menu: (actions, params) => [
-      ...(params.selectionText ? [actions.copy({})] : []), // Show "Copy" if text is selected
-      ...(params.isEditable ? [actions.paste({})] : []) // Show "Paste" if editable field
+      ...(params.selectionText ? [actions.copy({})] : []),
+      ...(params.isEditable ? [actions.paste({})] : [])
     ]
   })
 
-  initOfflineGamedata()
+  initGamedata()
 
   if (IS_DEV) {
     mainWindow.webContents.on("before-input-event", (_, input) => {
@@ -69,6 +69,4 @@ app.whenReady().then(async () => {
       }
     })
   }
-
-  // initOfflineGamedata()
 })

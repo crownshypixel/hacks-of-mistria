@@ -7,8 +7,7 @@ import { APPDATA_PATH, HOM_GAMEDATA_PATH, readJson, ROOT_PATH, safeExecFile, upd
 import { GamedataSchema } from "schema/gamedata"
 import fs from "node:fs/promises"
 import { z } from "zod"
-import { stat, cp, rmdir } from "node:fs/promises"
-// import { cp } from "node:fs"
+import { stat, cp } from "node:fs/promises"
 
 export const LOCAL_GAMEDATA_PATH = path.join(APPDATA_PATH, "Local", "FieldsOfMistria")
 export const SAVES_PATH = path.join(LOCAL_GAMEDATA_PATH, "saves")
@@ -242,7 +241,7 @@ const VersionSchema = z.string().refine((val) => {
 const ANNAS_GITHUB_URL = "https://raw.githubusercontent.com/AnnaNomoly/mistria-notes/refs/heads/main/game_data"
 const JSON_FILES = ["cooking_recipes.json", "cosmetics.json", "furniture_recipes.json", "items.json"] as const
 
-export async function fetchVersionIds(version: `v${number}.${number}`) {
+export async function fetchVersionGamedata(version: `v${number}.${number}`) {
   const res = VersionSchema.safeParse(version)
   if (res.error) return null
 
@@ -299,11 +298,12 @@ export async function fetchVersionIds(version: `v${number}.${number}`) {
     cosmetics,
     furnitureRecipes,
     items,
-    cookingRecipes
+    cookingRecipes,
+    version
   }
 }
 
-export async function initOfflineGamedata() {
+export async function initGamedata() {
   const existingGamedataDir = await stat(HOM_GAMEDATA_PATH).catch(() => null)
 
   if (!existingGamedataDir || !existingGamedataDir.isDirectory()) {
@@ -314,4 +314,10 @@ export async function initOfflineGamedata() {
       await cp(entry.parentPath, HOM_GAMEDATA_PATH, { recursive: true })
     }
   }
+}
+
+type Version = `v${number}.${number}`
+
+export async function getGamedataVersionList() {
+  return (await readdir(HOM_GAMEDATA_PATH)).map((v) => VersionSchema.parse(v)) as Version[]
 }

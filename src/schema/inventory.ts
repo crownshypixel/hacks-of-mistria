@@ -16,7 +16,8 @@ export const InfusionSchema = z.enum([
   "likeable",
   "loveable",
   "fairy",
-  "quality"
+  "quality",
+  "magical" // mentioned on the wiki, haven't verified in-game
 ])
 
 export const EquipmentTagSchema = z.enum(["head", "chest", "legs", "boots", "accessory"])
