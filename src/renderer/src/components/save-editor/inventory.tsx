@@ -1,5 +1,4 @@
 import {
-  Alert,
   Button,
   Card,
   Center,
@@ -16,19 +15,22 @@ import {
   Select,
   SimpleGrid,
   Stack,
-  Table,
-  Text,
-  useSelectContext
+  Text
 } from "@chakra-ui/react"
-import React, { memo, Suspense, useMemo, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import editIcon from "src/assets/edit.png"
 import { useEditorStore } from "src/components/save-editor/context"
 import { EditorData } from "src/store"
-import { Tooltip } from "../primitives/tooltip"
+import { Tooltip } from "src/components/primitives/tooltip"
 import { useGamedataInfo } from "src/queries"
 import { LoadingMessage } from "src/components/custom/loading"
 import { RadioCardItem, RadioCardRoot } from "src/components/primitives/radio-card"
-import { PaginationItems, PaginationNextTrigger, PaginationPrevTrigger, PaginationRoot } from "../primitives/pagination"
+import {
+  PaginationItems,
+  PaginationNextTrigger,
+  PaginationPrevTrigger,
+  PaginationRoot
+} from "src/components/primitives/pagination"
 import FuzzySearch from "fuzzy-search"
 import trashIcon from "src/assets/trash.png"
 import goldIcon from "src/assets/tessarae.webp"
@@ -37,9 +39,10 @@ import { InputGroup } from "src/components/primitives/input-group"
 import { infusionsCollection, InfusionWithNone } from "src/util"
 import { SelectInput } from "src/components/custom/select-input"
 import { z } from "zod"
-import { AlertNotes } from "../custom/alert-notes"
+import { AlertNotes } from "src/components/custom/alert-notes"
 
 type VersionedGamedata = NonNullable<Awaited<ReturnType<typeof window.api.invoke.getVersionGamedata>>>
+type NumberInputValueChangeDetails = Parameters<NonNullable<React.ComponentProps<typeof NumberInput.Root>["onValueChange"]>>[0]
 type Gamedata = Omit<VersionedGamedata, "version">
 type Version = VersionedGamedata["version"]
 type Slot = EditorData["playerInventory"][number]
@@ -102,10 +105,7 @@ function PlayerInventory({ versionedGamedata }: { versionedGamedata: VersionedGa
   const activeVersionChangeHandler = (version: Version) => setActiveVersion(version)
 
   // get the active version gamedata and also remove the version
-  const { version: _, ...activeVersionGamedata } = useMemo(
-    () => versionedGamedata.find((data) => data.version === activeVersion)!,
-    [activeVersion]
-  )
+  const { version: _, ...activeVersionGamedata } = versionedGamedata.find((data) => data.version === activeVersion)!
 
   const alertNotes = [
     "You can add any item except animal cosmetics.",
@@ -133,51 +133,8 @@ function PlayerInventory({ versionedGamedata }: { versionedGamedata: VersionedGa
   )
 }
 
-function VersionPicker({
-  versions,
-  activeVersion,
-  onVersionChange
-}: {
-  versions: Version[]
-  activeVersion: Version
-  onVersionChange: (v: Version) => void
-}) {
-  const versionsCollection = createListCollection({
-    items: versions.map((v) => ({ label: v, value: v }))
-  })
-
-  return (
-    <Select.Root
-      w="120px"
-      onValueChange={(e) => onVersionChange(e.value[0] as Version)}
-      value={[activeVersion]}
-      collection={versionsCollection}
-    >
-      <Select.Label>Items Version</Select.Label>
-      <Select.Control>
-        <Select.Trigger>
-          <Select.ValueText />
-          <Select.Indicator />
-        </Select.Trigger>
-      </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content w="100px">
-            {versionsCollection.items.map((item) => (
-              <Select.Item item={item} key={item.value}>
-                {item.label}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
-    </Select.Root>
-  )
-}
-
 function Slot({ slotId, gamedata }: { slotId: number; gamedata: Gamedata }) {
-  const setEdits = useEditorStore((s) => s.setEdits)
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
+  const { setEdits, slot } = useEditorStore((s) => ({ setEdits: s.setEdits, slot: s.edits.playerInventory[slotId] }))
   const slotType = getSlotType(slot)
 
   const ids = gamedata.items.filter((item) => item !== "animal_cosmetic")
@@ -208,49 +165,48 @@ function Slot({ slotId, gamedata }: { slotId: number; gamedata: Gamedata }) {
         </Tooltip>
       </HStack>
 
-      {/* NOTE: The Dialog state is active even when it's not open that's why we're forcing state reset from here with the `key` prop */}
       <Stack gap={3} textStyle="sm">
         {slotType === SlotType.Cooking ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
             <Text>Recipe</Text>
-            <CookingInnerItemPicker key={crypto.randomUUID()} slotId={slotId} innerItemIds={cookingIds} />
+            <CookingInnerItemPicker slotId={slotId} innerItemIds={cookingIds} />
           </Stack>
         ) : slotType === SlotType.Furniture ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
             <Text>Furniture</Text>
-            <FurnitureInnerItemPicker key={crypto.randomUUID()} slotId={slotId} innerItemIds={furnitureIds} />
+            <FurnitureInnerItemPicker slotId={slotId} innerItemIds={furnitureIds} />
           </Stack>
         ) : slotType === SlotType.Item ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
             <QuantityItemPicker slotId={slotId} />
             <InfusionPicker slotId={slotId} />
           </Stack>
         ) : slotType === SlotType.AnimalCosmetic ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
           </Stack>
         ) : slotType === SlotType.Empty ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
           </Stack>
         ) : slotType === SlotType.Purse ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
             <GoldPicker slotId={slotId} />
           </Stack>
         ) : slotType === SlotType.Cosmetic ? (
           <Stack my={1}>
             <Text>Item id</Text>
-            <ItemIdPicker key={crypto.randomUUID()} slotId={slotId} ids={ids} />
+            <ItemIdPicker slotId={slotId} ids={ids} />
             <Text>Cosmetic</Text>
             <CosmeticIdPicker slotId={slotId} cosmeticIds={cosmeticIds} />
           </Stack>
@@ -267,7 +223,6 @@ function InfusionPicker({ slotId }: { slotId: number }) {
   const [infusion, setInfusion] = useState(slot.members[0].infusion || InfusionWithNone.Values.none)
 
   const handleInfusionChange = (infValue: z.infer<typeof InfusionWithNone>) => {
-    console.log(infValue)
     setInfusion(infValue)
     setEdits((draft) => {
       draft.playerInventory[slotId].members.forEach((member) => {
@@ -287,13 +242,12 @@ function InfusionPicker({ slotId }: { slotId: number }) {
   )
 }
 
-const CosmeticIdPicker = memo(function ({ slotId, cosmeticIds }: { slotId: number; cosmeticIds: string[] }) {
+function CosmeticIdPicker({ slotId, cosmeticIds }: { slotId: number; cosmeticIds: string[] }) {
   const pageLimit = 40
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
   const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const searcher = useRef(new FuzzySearch(cosmeticIds))
-  const setEdits = useEditorStore((s) => s.setEdits)
   const scrollingAreaRef = useRef<HTMLDivElement>(null)
 
   const [tempCosmeticIdSelected, setTempCosmeticIdSelected] = useState(slot.members[0].cosmetic || "")
@@ -431,18 +385,14 @@ const CosmeticIdPicker = memo(function ({ slotId, cosmeticIds }: { slotId: numbe
       </Portal>
     </Dialog.Root>
   )
-})
-
-type NumberInputValueChangeDetails = Parameters<NonNullable<React.ComponentProps<typeof NumberInput.Root>["onValueChange"]>>[0]
+}
 
 function GoldPicker({ slotId }: { slotId: number }) {
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
-  const [gold, setGold] = useState(slot.members[0].gold_to_gain || 0)
-  const setEdits = useEditorStore((s) => s.setEdits)
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
+  const gold = slot.members[0].gold_to_gain || 0
 
   const handleGoldChange = (e: NumberInputValueChangeDetails) => {
     const safeGold = isNaN(e.valueAsNumber) ? 1 : e.valueAsNumber
-    setGold(safeGold)
     setEdits((draft) => {
       draft.playerInventory[slotId].members[0].gold_to_gain = safeGold
     })
@@ -466,16 +416,15 @@ function GoldPicker({ slotId }: { slotId: number }) {
 }
 
 function QuantityItemPicker({ slotId }: { slotId: number }) {
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
-  const [quantity, setQuantity] = useState(slot.members.length)
-  const setEdits = useEditorStore((s) => s.setEdits)
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
+  const quantity = slot.members.length
 
   const handleQuantityChange = (e: NumberInputValueChangeDetails) => {
     const safeQuantity = clamp(1, isNaN(e.valueAsNumber) ? 1 : e.valueAsNumber, 999)
-    setQuantity(safeQuantity)
 
     const member = { ...slot.members[0] }
     setEdits((draft) => {
+      // minimize the amount of array creations and state copies
       const currentMembers = draft.playerInventory[slotId].members
       if (currentMembers.length === safeQuantity) return
 
@@ -504,14 +453,13 @@ function QuantityItemPicker({ slotId }: { slotId: number }) {
   )
 }
 
-const FurnitureInnerItemPicker = memo(function ({ slotId, innerItemIds }: { slotId: number; innerItemIds: string[] }) {
-  const pageLimit = 40
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
+function FurnitureInnerItemPicker({ slotId, innerItemIds }: { slotId: number; innerItemIds: string[] }) {
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
   const [searchQuery, setSearchQuery] = useState("")
-  const [page, setPage] = useState(1)
   const searcher = useRef(new FuzzySearch(innerItemIds))
-  const setEdits = useEditorStore((s) => s.setEdits)
   const scrollingAreaRef = useRef<HTMLDivElement>(null)
+  const [page, setPage] = useState(1)
+  const pageLimit = 40
 
   const [tempInnerItemSelected, setTempInnerItemSelected] = useState(slot.members[0].inner_item || "")
 
@@ -545,6 +493,7 @@ const FurnitureInnerItemPicker = memo(function ({ slotId, innerItemIds }: { slot
   const displayedInnerItemIds = filteredInnerItemIds.slice((page - 1) * pageLimit, page * pageLimit)
 
   const isEmpty = tempInnerItemSelected === ""
+
   return (
     <Dialog.Root size="xl" placement="top" onExitComplete={handleDialogExit}>
       <Dialog.Trigger asChild>
@@ -645,16 +594,15 @@ const FurnitureInnerItemPicker = memo(function ({ slotId, innerItemIds }: { slot
       </Portal>
     </Dialog.Root>
   )
-})
+}
 
-const CookingInnerItemPicker = memo(function ({ slotId, innerItemIds }: { slotId: number; innerItemIds: string[] }) {
-  const pageLimit = 40
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId]) // we know it's a type of SlotType.Cooking
+function CookingInnerItemPicker({ slotId, innerItemIds }: { slotId: number; innerItemIds: string[] }) {
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
   const [searchQuery, setSearchQuery] = useState("")
-  const [page, setPage] = useState(1)
   const searcher = useRef(new FuzzySearch(innerItemIds))
-  const setEdits = useEditorStore((s) => s.setEdits)
   const scrollingAreaRef = useRef<HTMLDivElement>(null)
+  const [page, setPage] = useState(1)
+  const pageLimit = 40
 
   const [tempInnerItemSelected, setTempInnerItemSelected] = useState(slot.members[0].inner_item || "")
 
@@ -787,18 +735,17 @@ const CookingInnerItemPicker = memo(function ({ slotId, innerItemIds }: { slotId
       </Portal>
     </Dialog.Root>
   )
-})
+}
 
-const ItemIdPicker = memo(function ({ slotId, ids }: { slotId: number; ids: string[] }) {
-  const pageLimit = 40
-  const slot = useEditorStore((s) => s.edits.playerInventory[slotId])
+function ItemIdPicker({ slotId, ids }: { slotId: number; ids: string[] }) {
+  const { slot, setEdits } = useEditorStore((s) => ({ slot: s.edits.playerInventory[slotId], setEdits: s.setEdits }))
   const [searchQuery, setSearchQuery] = useState("")
-  const [page, setPage] = useState(1)
   const searcher = useRef(new FuzzySearch(ids))
   const slotType = getSlotType(slot)
   const [tempIdSelected, setTempIdSelected] = useState(slotType === SlotType.Empty ? "" : slot.members[0].item_id)
   const scrollingAreaRef = useRef<HTMLDivElement>(null)
-  const setEdits = useEditorStore((s) => s.setEdits)
+  const [page, setPage] = useState(1)
+  const pageLimit = 40
 
   const handlePageChange = (e: { page: number }) => {
     setPage(e.page)
@@ -956,7 +903,49 @@ const ItemIdPicker = memo(function ({ slotId, ids }: { slotId: number; ids: stri
       </Portal>
     </Dialog.Root>
   )
-})
+}
+
+function VersionPicker({
+  versions,
+  activeVersion,
+  onVersionChange
+}: {
+  versions: Version[]
+  activeVersion: Version
+  onVersionChange: (v: Version) => void
+}) {
+  const versionsCollection = createListCollection({
+    items: versions.map((v) => ({ label: v, value: v }))
+  })
+
+  return (
+    <Select.Root
+      w="120px"
+      onValueChange={(e) => onVersionChange(e.value[0] as Version)}
+      value={[activeVersion]}
+      collection={versionsCollection}
+    >
+      <Select.Label>Items Version</Select.Label>
+      <Select.Control>
+        <Select.Trigger>
+          <Select.ValueText />
+          <Select.Indicator />
+        </Select.Trigger>
+      </Select.Control>
+      <Portal>
+        <Select.Positioner>
+          <Select.Content w="100px">
+            {versionsCollection.items.map((item) => (
+              <Select.Item item={item} key={item.value}>
+                {item.label}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Portal>
+    </Select.Root>
+  )
+}
 
 function getSlotType(slot: Slot): SlotType {
   if (slot.members.length === 0) {
@@ -977,8 +966,4 @@ function getSlotType(slot: Slot): SlotType {
     default:
       return SlotType.Item
   }
-}
-
-function getSlotTypeFromItemId(itemId: string): SlotType {
-  return getSlotType({ members: [{ item_id: itemId }] } as Slot)
 }

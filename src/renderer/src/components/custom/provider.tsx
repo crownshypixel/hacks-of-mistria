@@ -1,5 +1,5 @@
 import { ChakraProvider, Theme } from "@chakra-ui/react"
-import { ColorModeProvider } from "../primitives/color-mode"
+import { ColorModeProvider } from "src/components/primitives/color-mode"
 
 export function Provider({ systemValue, ...props }) {
   return (
