@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const ARMOR_SLOTS = 5
 export const RENOWN_SLOTS = 8
-export const INVENTORY_SLOTS = [10, 20, 30]
+export const INVENTORY_SLOTS = [10, 20, 30] as const
 
 export const InfusionSchema = z.enum([
   "fortified",
@@ -22,6 +22,12 @@ export const InfusionSchema = z.enum([
 
 export const EquipmentTagSchema = z.enum(["head", "chest", "legs", "boots", "accessory"])
 
+export const PouchIds = z.enum(["basic_pouch", "large_pouch"])
+export const ScrollIds = z.enum(["crafting_scroll", "recipe_scroll"])
+export const PurseIds = z.literal("purse")
+export const CosmeticIds = z.literal("cosmetic")
+export const AnimalCosmeticIds = z.literal("animal_cosmetic")
+
 export const BasicMemberSchema = z.object({
   auto_use: z.boolean().default(false),
   cosmetic: z.null(),
@@ -37,7 +43,7 @@ export const PouchMemberSchema = z.object({
   cosmetic: z.null(),
   animal_cosmetic: z.null(),
   gold_to_gain: z.null(),
-  item_id: z.enum(["basic_pouch", "large_pouch"]),
+  item_id: PouchIds,
   inner_item: z.null(),
   infusion: InfusionSchema.nullable()
 })
@@ -47,7 +53,7 @@ export const ScrollMemberSchema = z.object({
   cosmetic: z.null(),
   animal_cosmetic: z.null(),
   gold_to_gain: z.null(),
-  item_id: z.enum(["crafting_scroll", "recipe_scroll"]),
+  item_id: ScrollIds,
   inner_item: z.string(),
   infusion: z.null()
 })
@@ -57,7 +63,7 @@ export const PurseMemberSchema = z.object({
   cosmetic: z.null(),
   animal_cosmetic: z.null(),
   gold_to_gain: z.number(),
-  item_id: z.literal("purse"),
+  item_id: PurseIds,
   inner_item: z.null(),
   infusion: z.null()
 })
@@ -67,7 +73,7 @@ export const CosmeticMemberSchema = z.object({
   cosmetic: z.string(),
   animal_cosmetic: z.null(),
   gold_to_gain: z.null(),
-  item_id: z.literal("cosmetic"),
+  item_id: CosmeticIds,
   inner_item: z.null(),
   infusion: z.null()
 })
@@ -77,7 +83,7 @@ export const AnimalCosmeticMemberSchema = z.object({
   cosmetic: z.null(),
   animal_cosmetic: z.object({ cosmetic: z.string(), animal: z.string() }),
   gold_to_gain: z.null(),
-  item_id: z.literal("animal_cosmetic"),
+  item_id: AnimalCosmeticIds,
   inner_item: z.null(),
   infusion: z.null()
 })
@@ -99,7 +105,7 @@ export const ArmorInventorySchema = z
     members: z.array(BasicMemberSchema).default([])
   })
   .array()
-  .length(ARMOR_SLOTS)
+// .length(ARMOR_SLOTS)
 
 export type ArmorInventory = z.infer<typeof ArmorInventorySchema>
 
@@ -120,7 +126,7 @@ export const RenownInventorySchema = z
       .default([])
   })
   .array()
-  .length(RENOWN_SLOTS)
+// .length(RENOWN_SLOTS)
 
 export type RenownInventory = z.infer<typeof RenownInventorySchema>
 
@@ -141,8 +147,9 @@ export const PlayerInventorySchema = z
       .default([])
   })
   .array()
-  .refine((arr) => INVENTORY_SLOTS.includes(arr.length), {
-    message: "Player's inventory must have 10, 20 or 30 slots"
-  })
+
+// .refine((arr) => INVENTORY_SLOTS.includes(arr.length), {
+//   message: "Player's inventory must have 10, 20 or 30 slots"
+// })
 
 export type PlayerInventory = z.infer<typeof PlayerInventorySchema>

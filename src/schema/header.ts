@@ -6,15 +6,15 @@ export const PresetSchema = z.object({
   skin_tone: z.number()
 })
 
-export const EffectTypeSchema = z.enum([
-  "restorative",
-  "speedy",
-  "fairy",
-  "guardians_shield",
-  "mine_time",
-  "slime_dash",
-  "shrine_boon"
-])
+// export const EffectTypeSchema = z.enum([
+//   "restorative",
+//   "speedy",
+//   "fairy",
+//   "guardians_shield",
+//   "mine_time",
+//   "slime_dash",
+//   "shrine_boon"
+// ])
 
 // export const Spell = z.enum(["full_restore", "growth", "summon_rain"])
 export const ForecastSchema = z.enum(["calm", "inclement", "heavy_inclement", "special"])
@@ -31,16 +31,16 @@ export const StatsSchema = z
     renown: z.number(),
     essence: z.number(),
     mana_current: z.number(),
-    health_current: z.number(),
-    status_effects: z
-      .object({
-        finish: z.number(),
-        last_update: z.number(),
-        amount: z.null(),
-        type: EffectTypeSchema
-      })
-      .nullable()
-      .array()
+    health_current: z.number()
+    // status_effects: z
+    //   .object({
+    //     finish: z.number(),
+    //     last_update: z.number(),
+    //     amount: z.null(),
+    //     type: EffectTypeSchema
+    //   })
+    //   .nullable()
+    //   .array()
   })
   .passthrough()
 
