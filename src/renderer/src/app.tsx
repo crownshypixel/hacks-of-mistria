@@ -4,16 +4,25 @@ import { SaveEditor } from "src/components/save-editor/editor"
 import sleepingJimmyGif from "src/assets/jimmy.gif"
 import { LuInfo } from "react-icons/lu"
 import { GameSaves } from "src/components/game-saves"
-import { AppPage, useAppPage } from "src/store"
+import { AppPage, useActiveSavePath, useAppPage } from "src/store"
 
 export function App() {
   const { appPage, setAppPage } = useAppPage()
+  const { setActiveSavePath } = useActiveSavePath()
 
   const loadAllSavesHandler = () => setAppPage(AppPage.GameSaves)
-  const loadSaveHandler = () => {}
+  const loadSaveHandler = async () => {
+    const path = await window.api.invoke.pickSavFile()
+    if (!path) return
+
+    setActiveSavePath(path)
+    setAppPage(AppPage.SaveEditor)
+  }
+
   const loadFarmHandler = () => {}
+
   const backupSavesHandler = async () => {
-    const res = await window.api.invoke.backup()
+    const res = await window.api.invoke.backupDefaultSaves()
     if (!res) return
 
     toaster.create({
@@ -57,7 +66,8 @@ export function App() {
         />
         <Menu.Option
           color="yellow"
-          name="Load Save (soon)"
+          name="Load Save"
+          onClick={loadSaveHandler}
           infoDescription={<Text>Pick and load a save manually from your files</Text>}
         />
         <Menu.Option

@@ -55,7 +55,7 @@ export function GameSaves() {
   }
 
   const reloadSavesHandler = async () => {
-    await queryClient.resetQueries({ queryKey: ["saves"], exact: true })
+    await queryClient.resetQueries({ queryKey: ["default-saves"], exact: true })
   }
 
   const backToMenuHandler = () => {
@@ -127,8 +127,8 @@ export function GameSaves() {
 function Layout({ children }: { children: React.ReactNode }) {
   const maxWidth = 900
   const alertNotes = [
-    "The saves are shown in the same order as in-game.",
-    "Some values like the time (clock, playtime) might slightly differ from in-game."
+    "The saves are shown in the same order as in-game",
+    "Some values like the time (clock, playtime) might slightly differ from in-game"
   ]
 
   return (

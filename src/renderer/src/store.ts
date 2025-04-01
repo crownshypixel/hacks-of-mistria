@@ -11,27 +11,34 @@ export enum AppPage {
 }
 
 export type ActiveSaveId = string | null
+export type ActiveSavePath = string | null
 
 export type AppStoreState = {
   appPage: AppPage
   setAppPage: (appPage: AppPage) => void
   activeSaveId: ActiveSaveId
   setActiveSaveId: (saveId: ActiveSaveId) => void
+  activeSavePath: ActiveSavePath
+  setActiveSavePath: (savePath: ActiveSavePath) => void
 }
 
 export const useAppStore = create<AppStoreState>((set) => ({
   appPage: AppPage.Menu,
   setAppPage: (appPage: AppPage) => set({ appPage }),
   activeSaveId: null,
-  setActiveSaveId: (saveId: ActiveSaveId) => set({ activeSaveId: saveId })
+  setActiveSaveId: (saveId: ActiveSaveId) => set({ activeSaveId: saveId }),
+  activeSavePath: null,
+  setActiveSavePath: (savePath: ActiveSavePath) => set({ activeSavePath: savePath })
 }))
 
 export const useAppPage = () => useAppStore(useShallow((s) => ({ appPage: s.appPage, setAppPage: s.setAppPage })))
 export const useActiveSaveId = () =>
   useAppStore(useShallow((s) => ({ activeSaveId: s.activeSaveId, setActiveSaveId: s.setActiveSaveId })))
+export const useActiveSavePath = () =>
+  useAppStore(useShallow((s) => ({ activeSavePath: s.activeSavePath, setActiveSavePath: s.setActiveSavePath })))
 
 // ===== EDITOR STORE =====
-export type EditorData = NonNullable<Awaited<ReturnType<typeof window.api.invoke.getSaveInfo>>>
+export type EditorData = NonNullable<Awaited<ReturnType<typeof window.api.invoke.getSaveEditingInfo>>>
 
 export type EditorStoreState = {
   edits: EditorData
@@ -40,8 +47,10 @@ export type EditorStoreState = {
   resetOnly: (prop: keyof EditorData) => void
 }
 
+const cloneObject = (obj: object) => JSON.parse(JSON.stringify(obj))
+
 export const createEditorStore = (initialData: EditorData) => {
-  const safe = structuredClone(initialData)
+  const safe = cloneObject(initialData)
 
   return createStore<EditorStoreState>()(
     immer((set) => ({
@@ -52,12 +61,12 @@ export const createEditorStore = (initialData: EditorData) => {
         }),
       resetEdits: () =>
         set((state) => {
-          state.edits = structuredClone(safe)
+          state.edits = cloneObject(safe)
         }),
       resetOnly: (prop) =>
         set((state) => {
           // @ts-ignore
-          state.edits[prop] = structuredClone(safe[prop])
+          state.edits[prop] = cloneObject(safe[prop])
         })
     }))
   )

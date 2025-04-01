@@ -7,6 +7,7 @@ import essenceIcon from "src/assets/essence.png"
 import staminaIcon from "src/assets/stamina.png"
 import renownIcon from "src/assets/renown.png"
 import healthIcon from "src/assets/heart.png"
+import manaIcon from "src/assets/mana.png"
 import { Field } from "src/components/primitives/field"
 import { InputGroup } from "src/components/primitives/input-group"
 import { LuInfo } from "react-icons/lu"
@@ -40,11 +41,12 @@ const rankIcons: { [rank in RenownRank]: string } = {
 type NumberInputValueChangeDetails = Parameters<NonNullable<React.ComponentProps<typeof NumberInput.Root>["onValueChange"]>>[0]
 
 export function StatsEditing() {
-  const { gold, essence, stamina, health, renown, setEdits } = useEditorStore((s) => ({
+  const { gold, essence, stamina, health, mana, renown, setEdits } = useEditorStore((s) => ({
     gold: s.edits.gold,
     essence: s.edits.essence,
     stamina: s.edits.stamina,
     health: s.edits.health,
+    mana: s.edits.mana,
     renown: s.edits.renown,
     setEdits: s.setEdits
   }))
@@ -73,6 +75,12 @@ export function StatsEditing() {
     })
   }
 
+  const manaChangeHandler = (mana: number) => {
+    setEdits((draft) => {
+      draft.mana = mana
+    })
+  }
+
   const renownChangeHandler = (renown: number) => {
     setEdits((draft) => {
       draft.renown = renown
@@ -92,6 +100,7 @@ export function StatsEditing() {
         <StatNumberInput label="Essence" value={essence} icon={essenceIcon} onValueChange={essenceChangeHandler} />
         <StatNumberInput label="Stamina" value={stamina} icon={staminaIcon} onValueChange={staminaChangeHandler} />
         <StatNumberInput label="Health" value={health} icon={healthIcon} onValueChange={healthChangeHandler} />
+        <StatNumberInput label="Mana" value={mana} icon={manaIcon} onValueChange={manaChangeHandler} />
 
         <StatNumberInput
           label="Renown"
@@ -148,7 +157,7 @@ function StatNumberInput({
         <NumberInput.Root w="250px" value={value.toString()} onValueChange={handler} min={min} step={step}>
           <InputGroup startElement={<Image src={icon} w="20px" h="20px" />}>
             <>
-              <NumberInput.Input px="40px" />
+              <NumberInput.Input px="40px" autoCorrect="off" />
               <NumberInput.Control>
                 <NumberInput.IncrementTrigger />
                 <NumberInput.DecrementTrigger />

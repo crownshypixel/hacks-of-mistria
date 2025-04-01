@@ -14,23 +14,23 @@ const defaultQueryOpts = {
 export function useSaves() {
   return useQuery({
     ...defaultQueryOpts,
-    queryKey: ["saves"],
+    queryKey: ["default-saves"],
     queryFn: async () => {
-      await invoke.unpackAll()
-      return invoke.getAllSavesInfo()
+      await invoke.unpackDefaultSaves()
+      return invoke.getDefaultSavesListInfo()
     }
   })
 }
 
-// used in the save-editor to load all the editing data like the player inventory, armor inventory etc
-export function useSave(saveId: string | null) {
+// `saveKey` can be a save id or a path, the backend will handle it
+export function useSave(saveKey: string | null) {
   return useQuery({
     ...defaultQueryOpts,
-    queryKey: ["save", saveId],
-    queryFn: async () => {
-      return invoke.getSaveInfo(saveId!)
+    queryKey: ["editing-save", saveKey],
+    queryFn: () => {
+      return invoke.getSaveEditingInfo(saveKey!)
     },
-    enabled: !!saveId
+    enabled: !!saveKey
   })
 }
 
@@ -41,7 +41,7 @@ export function useGamedata() {
     queryKey: ["gamedata"],
     queryFn: async () => {
       const versions = await invoke.getGamedataVersions()
-      const gamedata = await Promise.all(versions.map((v) => invoke.getVersionGamedata(v)))
+      const gamedata = await Promise.all(versions.map((v) => invoke.getGamedata(v)))
       return gamedata.filter((data) => data !== null)
     }
   })

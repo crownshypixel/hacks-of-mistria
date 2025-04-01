@@ -60,7 +60,7 @@ export function CharacterEditing() {
   )
 }
 
-export function formatPronouns(pronouns: string, reverse = false) {
+function formatPronouns(pronouns: string, reverse = false) {
   const transformFn = reverse ? "toLowerCase" : "toUpperCase"
 
   if (!(pronouns.includes("/") || pronouns.includes("_"))) {
@@ -76,7 +76,7 @@ export function formatPronouns(pronouns: string, reverse = false) {
     .join(toSymbol)
 }
 
-export const pronounsCollection = createListCollection({
+const pronounsCollection = createListCollection({
   items: Object.keys(PronounSchema.enum).map((p) => ({
     label: formatPronouns(p),
     value: formatPronouns(p, true)

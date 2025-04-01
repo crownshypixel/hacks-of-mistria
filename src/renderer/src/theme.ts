@@ -1,5 +1,4 @@
 import { defineConfig, defaultConfig, createSystem } from "@chakra-ui/react"
-import cursorIdle from "./assets/cursor/idle.png"
 
 const config = defineConfig({
   cssVarsRoot: ":where(html)",
