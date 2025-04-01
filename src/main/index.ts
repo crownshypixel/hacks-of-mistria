@@ -4,7 +4,7 @@ import { electronApp } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
 import { IS_DEV } from "main/util"
 import { ipcMain } from "main/ipc"
-import { initGamedata } from "main/vault"
+import { initGamedata } from "main/gamedata"
 
 const { handle } = ipcMain
 
