@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow } from "electron"
 import { join } from "path"
 import { electronApp } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
-import { IS_DEV } from "main/util"
+// import { IS_DEV } from "main/util"
 import { ipcMain } from "main/ipc"
 import { initGamedata } from "main/gamedata"
 
@@ -42,7 +42,7 @@ app.whenReady().then(async () => {
     return { action: "deny" }
   })
 
-  if (IS_DEV && process.env["ELECTRON_RENDERER_URL"]) {
+  if (process.env["ELECTRON_RENDERER_URL"]) {
     mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
@@ -60,13 +60,13 @@ app.whenReady().then(async () => {
 
   initGamedata()
 
-  if (IS_DEV) {
-    mainWindow.webContents.on("before-input-event", (_, input) => {
-      if (input.type === "keyDown" && input.key === "F12") {
-        mainWindow.webContents.isDevToolsOpened()
-          ? mainWindow.webContents.closeDevTools()
-          : mainWindow.webContents.openDevTools({ mode: "right" })
-      }
-    })
-  }
+  // if (IS_DEV) {
+  //   mainWindow.webContents.on("before-input-event", (_, input) => {
+  //     if (input.type === "keyDown" && input.key === "F12") {
+  //       mainWindow.webContents.isDevToolsOpened()
+  //         ? mainWindow.webContents.closeDevTools()
+  //         : mainWindow.webContents.openDevTools({ mode: "right" })
+  //     }
+  //   })
+  // }
 })

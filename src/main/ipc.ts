@@ -154,7 +154,3 @@ function setBirthdayIpcHandler(_, { saveId, birthday }: { saveId: string; birthd
 function setPlayerInventoryIpcHandler(_, { saveId, playerInventory }: { saveId: string; playerInventory: PlayerInventory }) {
   return setPlayerInventory(saveId, playerInventory)
 }
-
-// function packIpcHandler(_, { saveKey, shouldBringOnTop = false }: { saveKey: string; shouldBringOnTop?: boolean }) {
-//   return packSave(saveKey, { shouldBringOnTop })
-// }
