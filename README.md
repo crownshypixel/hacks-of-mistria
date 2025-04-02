@@ -1,17 +1,14 @@
 ## Hacks of Mistria
 
-Hacks of Mistria (HoM) is an editor tool for your saves in Fields of Mistria. With HoM, you can modify things such as the date, your stats, add items to your save file, and more! You can download the latest version in the releases.
+Hacks of Mistria (HoM) is an editor tool for your saves in Fields of Mistria. You can modify things such as the date, your stats, add items to your inventory, and more! You can download the latest version in the releases.
 
-Please note that while I'm doing my best to ensure you don't ruin your saves, using this tool comes with some risk. Make sure to backup your saves first. 
-Your saves are under `C:\Users\yourusername\AppData\Local\FieldsOfMistria\saves`. 
-To backup your saves, simply copy your saves folder somewhere on your computer!
+Before you do anything, you should backup your saves. You can do this through the app (there is a backup saves button in the menu) or manually by copying the files that are on `C:\Users\yourusername\AppData\Local\FieldsOfMistria\saves` to where you want.
 
-‼️Please don't skip the backup step—I can't stress this enough‼️
+I intend on adding more features like removing mods, editing your farm layout template, improving inventory, adding more edits, etc.
 
-The app will automatically detect your local saves and list them in the exact order as they show in game. After editing a save and clicking apply, your changes will be shown on the top (both in game and on the app).
+When there is an update, either small or big, a warning will be shown in the menu of the app for you to download.
 
-While HoM lets you do some fun stuff you couldn't otherwise do, please be mindful, especially when editing the inventory. Adding items with infusions or creating stacks that wouldn't be possible in the game normally can break your save. 
-If this happens and you can't load your save, just edit your problematic items or remove them.
+For any questions, issues you can dm me either here through the issues or on Discord. My Discord handle is **crownshypixel**
 
 ## Contributors
 
