@@ -8,8 +8,9 @@ import { InfoSchema } from "schema/info"
 export const ROOT_PATH = path.join(__dirname, "..", "..")
 export const APPDATA_PATH = path.join(os.homedir(), "AppData")
 export const VAULTC_PATH = path.join(ROOT_PATH, "vaultc.exe")
-export const HOM_USERDATA_PATH = path.join(APPDATA_PATH, "Roaming", "hacks-of-mistria")
-export const HOM_GAMEDATA_PATH = path.join(HOM_USERDATA_PATH, "gamedata")
+// export const HOM_USERDATA_PATH = path.join(APPDATA_PATH, "Roaming", "hacks-of-mistria")
+export const HOM_GAMEDATA_PATH = path.join(ROOT_PATH, "gamedata")
+
 export const FOM_LOCAL_PATH = path.join(APPDATA_PATH, "Local", "FieldsOfMistria")
 export const FOM_SAVES_PATH = path.join(FOM_LOCAL_PATH, "saves")
 export const HOM_TEMP_PATH = path.join(APPDATA_PATH, "Local", "Temp", "hacks-of-mistria")

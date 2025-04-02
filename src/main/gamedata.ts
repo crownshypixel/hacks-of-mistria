@@ -11,8 +11,8 @@ export const GamedataVersionSchema = z.string().refine((val) => {
 })
 
 export async function fetchVersionGamedata(version: `v${number}.${number}`) {
-  const ANNAS_GITHUB_URL = "https://raw.githubusercontent.com/AnnaNomoly/mistria-notes/refs/heads/main/game_data"
-  const JSON_FILES = ["cooking_recipes.json", "cosmetics.json", "furniture_recipes.json", "items.json"] as const
+  // const ANNAS_GITHUB_URL = "https://raw.githubusercontent.com/AnnaNomoly/mistria-notes/refs/heads/main/game_data"
+  // const JSON_FILES = ["cooking_recipes.json", "cosmetics.json", "furniture_recipes.json", "items.json"] as const
 
   const res = GamedataVersionSchema.safeParse(version)
   if (res.error) return null
@@ -24,33 +24,33 @@ export async function fetchVersionGamedata(version: `v${number}.${number}`) {
   // we're loading here the files paths to read at the end
   let gamedataFiles: string[] = []
 
-  if (!existingGamedata) {
-    const res = await fetch(`${ANNAS_GITHUB_URL}/${version}/parsed/items.json`).catch(() => null)
-    if (!res || !res?.ok) {
-      // No ids of the version in anna's github
-      return null
-    }
+  // if (!existingGamedata) {
+  //   const res = await fetch(`${ANNAS_GITHUB_URL}/${version}/parsed/items.json`).catch(() => null)
+  //   if (!res || !res?.ok) {
+  //     // No ids of the version in anna's github
+  //     return null
+  //   }
 
-    await mkdir(join(HOM_GAMEDATA_PATH, version), { recursive: true })
+  //   await mkdir(join(HOM_GAMEDATA_PATH, version), { recursive: true })
 
-    for (const file of JSON_FILES) {
-      const res = await fetch(`${ANNAS_GITHUB_URL}/${version}/parsed/${file}`).catch(() => null)
+  //   for (const file of JSON_FILES) {
+  //     const res = await fetch(`${ANNAS_GITHUB_URL}/${version}/parsed/${file}`).catch(() => null)
 
-      if (!res || !res.ok) {
-        // remove any remnants if some files where fetched but at least one failed
-        await rm(join(HOM_GAMEDATA_PATH, version), { recursive: true, force: true })
-        return null
-      }
+  //     if (!res || !res.ok) {
+  //       // remove any remnants if some files where fetched but at least one failed
+  //       await rm(join(HOM_GAMEDATA_PATH, version), { recursive: true, force: true })
+  //       return null
+  //     }
 
-      const contents = await res.json()
-      const jsonFile = join(HOM_GAMEDATA_PATH, version, file)
-      await writeJson(jsonFile, contents)
+  //     const contents = await res.json()
+  //     const jsonFile = join(HOM_GAMEDATA_PATH, version, file)
+  //     await writeJson(jsonFile, contents)
 
-      gamedataFiles.push(jsonFile)
-    }
-  } else {
-    gamedataFiles = existingGamedata.map((dirent) => join(dirent.parentPath, dirent.name))
-  }
+  //     gamedataFiles.push(jsonFile)
+  //   }
+  // } else {
+  //   gamedataFiles = existingGamedata.map((dirent) => join(dirent.parentPath, dirent.name))
+  // }
 
   let cosmetics: string[] = []
   let furnitureRecipes: string[] = []
@@ -75,18 +75,18 @@ export async function fetchVersionGamedata(version: `v${number}.${number}`) {
   }
 }
 
-export async function initGamedata() {
-  const existingGamedataDir = await stat(HOM_GAMEDATA_PATH).catch(() => null)
+// export async function initGamedata() {
+//   const existingGamedataDir = await stat(HOM_GAMEDATA_PATH).catch(() => null)
 
-  if (!existingGamedataDir || !existingGamedataDir.isDirectory()) {
-    const prefetchedGamedata = join(ROOT_PATH, "gamedata")
-    const prefetchedVersionEntries = await readdir(prefetchedGamedata, { withFileTypes: true })
+//   if (!existingGamedataDir || !existingGamedataDir.isDirectory()) {
+//     const prefetchedGamedata = join(ROOT_PATH, "gamedata")
+//     const prefetchedVersionEntries = await readdir(prefetchedGamedata, { withFileTypes: true })
 
-    for (const entry of prefetchedVersionEntries) {
-      await cp(entry.parentPath, HOM_GAMEDATA_PATH, { recursive: true })
-    }
-  }
-}
+//     for (const entry of prefetchedVersionEntries) {
+//       await cp(entry.parentPath, HOM_GAMEDATA_PATH, { recursive: true })
+//     }
+//   }
+// }
 
 export async function getGamedataVersionList() {
   return (await readdir(HOM_GAMEDATA_PATH)).map((v) => GamedataVersionSchema.parse(v)) as Version[]

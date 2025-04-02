@@ -3,7 +3,6 @@ import { join } from "path"
 import { electronApp, is } from "@electron-toolkit/utils"
 import icon from "root/resources/icon.png?asset"
 import { ipcMain } from "main/ipc"
-import { initGamedata } from "main/gamedata"
 
 const { handle } = ipcMain
 
@@ -57,7 +56,7 @@ app.whenReady().then(async () => {
     ]
   })
 
-  initGamedata()
+  // initGamedata()
 
   if (is.dev) {
     mainWindow.webContents.on("before-input-event", (_, input) => {
