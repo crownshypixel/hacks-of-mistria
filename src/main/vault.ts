@@ -5,6 +5,7 @@ import { InfoSchema } from "schema/info"
 import { readJson, savesPaths, unpackSave, updateObjectValue, writeJson } from "main/util"
 import { GamedataSchema } from "schema/gamedata"
 import { PlayerInventory } from "schema/inventory"
+import { app } from "electron"
 
 export type SaveListInfo = Awaited<ReturnType<typeof getSaveListInfo>>
 export type SaveEditingInfo = Awaited<ReturnType<typeof getSaveEditingInfo>>
@@ -75,6 +76,38 @@ export async function getSaveEditingInfo(saveKey: string) {
     playerInventory: parsedPlayer.inventory,
     saveId
   }
+}
+
+export async function getAppVersion() {
+  const currentVersion = app.getVersion()
+  let latestVersion = currentVersion
+  let updateExists = false
+
+  const url = `https://raw.githubusercontent.com/crownshypixel/hacks-of-mistria/refs/heads/main/package.json`
+  try {
+    const res = await fetch(url)
+
+    if (!res.ok) {
+      console.error("couldn't fetch latest version. Either github is down or user doesn't have internet access")
+    }
+
+    const packageJson = await res.text()
+    const latest = packageJson["version"]
+
+    if (latest) {
+      latestVersion = latest
+      const [latestMajor, latestMinor, latestPatch] = latest.split(".")
+      const [currentMajor, currentMinor, currentPatch] = latest.split(".")
+
+      if (latestMajor > currentMajor || latestMinor > currentMinor || latestPatch > currentPatch) {
+        updateExists = true
+      }
+    }
+  } catch (error) {
+    console.error(`an error has occured`, error)
+  }
+
+  return { current: currentVersion, latest: latestVersion, updateExists }
 }
 
 export async function setGold(saveId: string, gold: number) {

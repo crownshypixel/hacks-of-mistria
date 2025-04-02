@@ -46,3 +46,13 @@ export function useGamedata() {
     }
   })
 }
+
+export function useAppVersion() {
+  return useQuery({
+    ...defaultQueryOpts,
+    queryKey: ["app-version"],
+    queryFn: async () => {
+      return invoke.getAppVersion()
+    }
+  })
+}

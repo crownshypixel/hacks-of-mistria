@@ -2,6 +2,7 @@ import { createInterprocess } from "interprocess"
 import { dialog } from "electron/main"
 import { backupSaves, packSave, unpackDefaultSaves, unpackSave } from "./util"
 import {
+  getAppVersion,
   getDefaultSavesListInfo,
   getSaveEditingInfo,
   getSaveListInfo,
@@ -35,6 +36,7 @@ export const { exposeApiToGlobalWindow, ipcMain, ipcRenderer } = createInterproc
     getSaveEditingInfo: getSaveEditingInfoIpcHandler,
     getGamedata: getGamedataIpcHandler,
     getGamedataVersions: getGamedataVersionsIpcHandler,
+    getAppVersion: getAppVersionIpcHandler,
     setGold: setGoldIpcHandler,
     setEssence: setEssenceIpcHandler,
     setRenown: setRenownIpcHandler,
@@ -105,6 +107,10 @@ function getGamedataIpcHandler(_, version: Version) {
 
 function getGamedataVersionsIpcHandler() {
   return getGamedataVersionList()
+}
+
+function getAppVersionIpcHandler() {
+  return getAppVersion()
 }
 
 function setGoldIpcHandler(_, { saveId, gold }: { saveId: string; gold: number }) {

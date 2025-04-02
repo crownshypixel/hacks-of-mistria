@@ -5,14 +5,6 @@ import { z } from "zod"
 import { execFile } from "node:child_process"
 import { InfoSchema } from "schema/info"
 
-// const env = z
-//   .object({
-//     NODE_ENV: z.enum(["development", "production"])
-//   })
-//   .parse(process.env)
-
-// export const IS_DEV = env.NODE_ENV === "development"
-// export const IS_PROD = env.NODE_ENV === "production"
 export const ROOT_PATH = path.join(__dirname, "..", "..")
 export const APPDATA_PATH = path.join(os.homedir(), "AppData")
 export const VAULTC_PATH = path.join(ROOT_PATH, "vaultc.exe")

@@ -1,14 +1,17 @@
-import { Box, Button, Center, Code, Dialog, HStack, Image, Portal, Separator, Stack, Text } from "@chakra-ui/react"
+import { Alert, Box, Button, Center, Code, Dialog, HStack, Image, Portal, Separator, Stack, Text } from "@chakra-ui/react"
 import { Toaster, toaster } from "src/components/primitives/toaster"
 import { SaveEditor } from "src/components/save-editor/editor"
 import sleepingJimmyGif from "src/assets/jimmy.gif"
 import { LuInfo } from "react-icons/lu"
 import { GameSaves } from "src/components/game-saves"
 import { AppPage, useActiveSavePath, useAppPage } from "src/store"
+import { useAppVersion } from "src/queries"
+import { AlertNotes } from "src/components/custom/alert-notes"
 
 export function App() {
   const { appPage, setAppPage } = useAppPage()
   const { setActiveSavePath } = useActiveSavePath()
+  const { data: versionData } = useAppVersion()
 
   const loadAllSavesHandler = () => setAppPage(AppPage.GameSaves)
   const loadSaveHandler = async () => {
@@ -49,6 +52,14 @@ export function App() {
 
   return (
     <AppLayout>
+      {versionData && versionData.updateExists && (
+        <AlertNotes status="warning">
+          There is a new version ({versionData.latest}). Go to{" "}
+          <a href={`https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v${versionData.latest}`} target="_blank">
+            https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v{versionData.latest}
+          </a>
+        </AlertNotes>
+      )}
       <Menu>
         <Menu.Option
           showJimmy
