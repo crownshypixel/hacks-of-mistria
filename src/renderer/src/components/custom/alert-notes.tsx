@@ -1,23 +1,24 @@
-import { Alert } from "@chakra-ui/react"
+import { Alert, Flex } from "@chakra-ui/react"
 
 export function AlertNotes({
   notes,
-  status = "info",
-  children
+  status = "info"
 }: {
-  notes?: string[]
-  status: React.ComponentProps<typeof Alert.Root>["status"]
-  children?: React.ReactNode
+  notes: React.ReactNode[]
+  status?: React.ComponentProps<typeof Alert.Root>["status"]
 }) {
   return (
     <Alert.Root status={status}>
       <Alert.Indicator />
       <Alert.Content gap={2}>
-        {!children && notes ? (
-          notes.map((note, idx) => <Alert.Description key={idx}>{`> ${note}`}</Alert.Description>)
-        ) : (
-          <>{children}</>
-        )}
+        {notes &&
+          notes.map((note, idx) => (
+            <Alert.Description key={idx}>
+              <Flex gap={1}>
+                {`>`} {note}
+              </Flex>
+            </Alert.Description>
+          ))}
       </Alert.Content>
     </Alert.Root>
   )

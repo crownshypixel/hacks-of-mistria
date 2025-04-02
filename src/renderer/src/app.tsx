@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Center, Code, Dialog, HStack, Image, Portal, Separator, Stack, Text } from "@chakra-ui/react"
+import { Alert, Box, Button, Center, Code, Dialog, HStack, Image, Link, Portal, Separator, Stack, Text } from "@chakra-ui/react"
 import { Toaster, toaster } from "src/components/primitives/toaster"
 import { SaveEditor } from "src/components/save-editor/editor"
 import sleepingJimmyGif from "src/assets/jimmy.gif"
@@ -22,8 +22,6 @@ export function App() {
     setAppPage(AppPage.SaveEditor)
   }
 
-  const loadFarmHandler = () => {}
-
   const backupSavesHandler = async () => {
     const res = await window.api.invoke.backupDefaultSaves()
     if (!res) return
@@ -33,6 +31,8 @@ export function App() {
       description: `Copied ${res.savesCopied} saves to ${res.backupPath}`
     })
   }
+
+  const loadFarmHandler = () => {}
 
   if (appPage === AppPage.GameSaves) {
     return (
@@ -53,12 +53,20 @@ export function App() {
   return (
     <AppLayout>
       {versionData && versionData.updateExists && (
-        <AlertNotes status="warning">
-          There is a new version ({versionData.latest}). Go to{" "}
-          <a href={`https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v${versionData.latest}`} target="_blank">
-            https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v{versionData.latest}
-          </a>
-        </AlertNotes>
+        <AlertNotes
+          status="warning"
+          notes={[
+            <Text>
+              There is a new version released ( {versionData.latest} )! You can download it from:{" "}
+              <Link
+                href={`https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v${versionData.latest}`}
+                target="_blank"
+              >
+                https://github.com/crownshypixel/hacks-of-mistria/releases/tag/v{versionData.latest}
+              </Link>
+            </Text>
+          ]}
+        ></AlertNotes>
       )}
       <Menu>
         <Menu.Option
@@ -82,20 +90,6 @@ export function App() {
           infoDescription={<Text>Pick and load a save manually from your files</Text>}
         />
         <Menu.Option
-          color="purple"
-          name="Load Farm (soon)"
-          infoDialogSize="lg"
-          infoDescription={
-            <Text>
-              Pick and load your <Code textStyle="md">farm.json</Code>. Except if your steam games are being saved in another
-              drive, the farm should be located on:
-              <Code my="2" textStyle="md">
-                C:\Program Files (x86)\Steam\steamapps\common\Fields of Mistria\starting_farms
-              </Code>
-            </Text>
-          }
-        />
-        <Menu.Option
           color="green"
           onClick={backupSavesHandler}
           name="Backup Saves"
@@ -110,7 +104,32 @@ export function App() {
             </Text>
           }
         />
+        <Menu.Option
+          color="purple"
+          name="Load Farm (soon)"
+          infoDialogSize="lg"
+          infoDescription={
+            <Text>
+              Pick and load your <Code textStyle="md">farm.json</Code> to edit. Except if your steam games are being stored in
+              another drive, the farm should be located on:
+              <Code my="2" textStyle="md">
+                C:\Program Files (x86)\Steam\steamapps\common\Fields of Mistria\starting_farms
+              </Code>
+            </Text>
+          }
+        />
+        <Menu.Option
+          color="red"
+          name="Mod remover (soon)"
+          infoDialogSize="lg"
+          infoDescription={<Text>Removes mod remains from your save</Text>}
+        />
       </Menu>
+      {versionData && (
+        <Text pos="absolute" bottom="2" right="5" opacity="0.8">
+          v{versionData.current}
+        </Text>
+      )}
     </AppLayout>
   )
 }

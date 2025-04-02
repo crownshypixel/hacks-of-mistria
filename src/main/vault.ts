@@ -84,13 +84,9 @@ export async function getAppVersion() {
   let updateExists = false
 
   const url = `https://raw.githubusercontent.com/crownshypixel/hacks-of-mistria/refs/heads/main/package.json`
-  try {
-    const res = await fetch(url)
+  const res = await fetch(url).catch(() => null)
 
-    if (!res.ok) {
-      console.error("couldn't fetch latest version. Either github is down or user doesn't have internet access")
-    }
-
+  if (res && res.ok) {
     const packageJson = await res.text()
     const latest = packageJson["version"]
 
@@ -103,8 +99,6 @@ export async function getAppVersion() {
         updateExists = true
       }
     }
-  } catch (error) {
-    console.error(`an error has occured`, error)
   }
 
   return { current: currentVersion, latest: latestVersion, updateExists }

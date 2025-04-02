@@ -10,6 +10,7 @@ import {
   IconButton,
   Image,
   Input,
+  Link,
   NumberInput,
   Portal,
   Select,
@@ -41,7 +42,7 @@ import { SelectInput } from "src/components/custom/select-input"
 import { z } from "zod"
 import { AlertNotes } from "src/components/custom/alert-notes"
 
-type VersionedGamedata = NonNullable<Awaited<ReturnType<typeof window.api.invoke.getVersionGamedata>>>
+type VersionedGamedata = NonNullable<Awaited<ReturnType<typeof window.api.invoke.getGamedata>>>
 type NumberInputValueChangeDetails = Parameters<NonNullable<React.ComponentProps<typeof NumberInput.Root>["onValueChange"]>>[0]
 type Gamedata = Omit<VersionedGamedata, "version">
 type Version = VersionedGamedata["version"]
@@ -110,8 +111,14 @@ function PlayerInventory({ versionedGamedata }: { versionedGamedata: VersionedGa
   const alertNotes = [
     "You can add any item except animal cosmetics.",
     "Depending on the item id you choose, more options will open for you to fill.",
-    "Some items might show the quantity option even if they don't (or shouldn't) stack, like equipment items. Be mindful where you add quantity.",
-    "Generally you can put any infusion on any item. It doesn't seem to cause any issues but you never know. If you are not sure, the wiki might help: https://fieldsofmistria.wiki.gg/wiki/Infusion"
+    "Some items might show the quantity option even if they don't (or shouldn't) stack, like swords, be mindful what you're adding!",
+    <Text>
+      You can put any infusion on any item. It doesn't seem to cause any problems. But if you still want to be careful, you can
+      check the wiki:{" "}
+      <Link href="https://fieldsofmistria.wiki.gg/wiki/Infusion" target="_blank">
+        https://fieldsofmistria.wiki.gg/wiki/Infusion
+      </Link>
+    </Text>
   ]
 
   return (
