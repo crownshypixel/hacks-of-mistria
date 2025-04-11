@@ -8,8 +8,6 @@ I intend on adding more features like removing mods, editing your farm layout te
 
 When there is an update, either small or big, a warning will be shown in the menu of the app for you to download.
 
-For any questions, issues you can dm me either here through the issues or on Discord. My Discord handle is **crownshypixel**
-
 ## Contributors
 
 <a href="https://github.com/crownshypixel/hacks-of-mistria/graphs/contributors">
